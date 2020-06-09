@@ -112,16 +112,17 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
 
       // Event displays with jets that come out of the box
-      //eventdisplays_tracks(s_sample,ientry,tracks);
+      eventdisplays_tracks(s_sample,ientry,tracks);
       //eventdisplays_jets(s_sample,ientry,jets);
       //eventdisplays_jetAK8s(s_sample,ientry,jetsAK8);
 
 
       // Trying different jet cone sizes and algorithms here...
-      makeJets(s_sample, ientry, tracks);
+      makeJets(s_sample, ientry, tracks, 0.8);
+      makeJets(s_sample, ientry, tracks, 1.5);
+      makeJets(s_sample, ientry, tracks, 2.0);
 
 
-      	   
 
       // Pflow candidates
       // Scan pT threshold 
@@ -139,16 +140,17 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 int main(int argc, char* argv[]){
 
     // defaults 
+    std::string tree_name = "TreeMaker2/PreSelection";
+    std::string file_name = "infiles/SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_AnalysisTree.root";
     std::string sample_name = "mMed-750_mDark-2_temp-2_decay-generic";
     std::string output_name = "mMed-750_mDark-2_temp-2_decay-generic";
-    std::string tree_name = "TreeMaker2/PreSelection";
-    std::string file_name = "infiles/PrivateSamples.SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_RA2AnalysisTree.root";
 
-    if (argc > 2){
+    // Pick file
+    // ./doHistos sample_name
+    if (argc > 1){
         sample_name = argv[1];
-        output_name = argv[2];
-        tree_name   = argv[3];
-        file_name   = argv[4];
+        output_name = argv[1];
+        file_name = Form("infiles/SUEP_2018_%s_13TeV-pythia8_AnalysisTree.root",sample_name.c_str());
     }
 
     std::cout << "Starting SUEP Studies!" << std::endl;
