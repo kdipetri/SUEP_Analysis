@@ -15,7 +15,7 @@ chmod +x setup.sh
 ```
 * setup environment (every time):
 ```
-cd nobackup/SUEPS/CMSSW_10_6_13/src/SUEP_Analysis
+cd nobackup/SUEPs/CMSSW_10_6_13/src/SUEP_Analysis
 cmsenv
 ```
 
