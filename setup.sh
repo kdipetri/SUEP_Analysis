@@ -6,6 +6,6 @@ scram project CMSSW_10_6_13
 cd CMSSW_10_6_13/src/
 # cmd below is cmsenv
 eval `scram runtime -sh`
-git clone https://github.com/kdipetri/SUEP_Analysis
+git clone https://github.com/kdipetri/SUEP_Analysis -b cmssw
 cd SUEP_Analysis
 ./compile.sh

@@ -9,7 +9,7 @@ cd SUEPs
 ```
 * install analysis code (once):
 ```
-wget https://raw.githubusercontent.com/kdipetri/SUEP_Analysis/master/setup.sh
+wget https://raw.githubusercontent.com/kdipetri/SUEP_Analysis/cmssw/setup.sh
 chmod +x setup.sh
 ./setup.sh
 ```
