@@ -18,6 +18,20 @@ void doHistos::Loop(std::string s_sample,bool isMC)
    Long64_t nentries = fChain->GetEntriesFast();
    std::cout << " Analyzing Tree : " << s_sample << " with " << nentries << " entries" << std::endl;
 
+
+   // disable all branches
+   fChain->SetBranchStatus("*",0);
+   // only activate branches that are used (faster)
+   vector<string> branches_used{
+      "Jets",
+      "Jets_ID",
+      "JetsAK8",
+      "JetsAK8_ID",
+      "Tracks",
+      "Tracks_fromPV0",
+      "Tracks_matchedToPFCandidate",
+   };
+   for(const auto& branch : branches_used) fChain->SetBranchStatus(branch.c_str(),1);
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
