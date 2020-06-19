@@ -37,7 +37,7 @@ python util/make_displays.py
 ```
 
 # Tips
-* Be sure to make output, plot directories to store output histograms and output plots
+* directories output, plots are used to store output histograms and output plots
 * Double check location of rootfiles 
 
 # Signal n-tuples live here
