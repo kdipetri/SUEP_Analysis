@@ -1,0 +1,5 @@
+*.png
+*.root
+*.pyc
+*.DS_Store
+doHistos
