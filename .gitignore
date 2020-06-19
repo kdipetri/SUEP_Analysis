@@ -1,0 +1,8 @@
+/doHistos
+
+# Binary files
+*.root
+*.png
+*.zip
+*.eps
+*.pdf

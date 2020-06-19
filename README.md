@@ -6,12 +6,17 @@
 cd nobackup
 mkdir SUEPs
 cd SUEPs
-git clone https://github.com/kdipetri/SUEP_Analysis.git
 ```
-* install fastjet in SUEPs directory, following these directions http://fastjet.fr/quickstart.html
+* install analysis code (once):
 ```
-cd SUEP_Analysis
-source setup.sh 
+wget https://raw.githubusercontent.com/kdipetri/SUEP_Analysis/master/setup.sh
+chmod +x setup.sh
+./setup.sh
+```
+* setup environment (every time):
+```
+cd nobackup/SUEPs/CMSSW_10_6_13/src/SUEP_Analysis
+cmsenv
 ```
 
 # Histogram Making Step
@@ -20,8 +25,8 @@ source setup.sh
 * FastJet is included to make fatjets from tracks in Root/jetStudies.C
 * The event loop lives in Root/doHistos.C
 ```
-source compile.sh 
-source run.sh 
+./compile.sh 
+./run.sh 
 ```
 
 # Plot Making Step
@@ -32,7 +37,7 @@ python util/make_displays.py
 ```
 
 # Tips
-* Be sure to make output, plot directories to store output histograms and output plots
+* directories output, plots are used to store output histograms and output plots
 * Double check location of rootfiles 
 
 # Signal n-tuples live here
@@ -41,7 +46,7 @@ eosls /store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP
 ```
 * There are 12 signal points, and each sample has 10k events
 * There are three decay scenarios and 4 scalar masses
-* Let's focus on the “generic” decay scenario first
+* Let's focus on the "generic" decay scenario first
 - scalar pdgId = 25
 - dark meson pdgId = 999999
 - dark photon pdgId = 999998

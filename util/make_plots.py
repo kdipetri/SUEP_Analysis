@@ -1,4 +1,5 @@
 import ROOT
+import os
 from array import array
 from plothelper import *
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -139,9 +140,9 @@ def compare1D(hists,labels,filename):
 def compareMass(temp,mDark,decay,dist):
     mMeds = []
     mMeds.append(125)
-    mMeds.append(400)
-    mMeds.append(750)
-    mMeds.append(1000)
+#    mMeds.append(400)
+#    mMeds.append(750)
+#    mMeds.append(1000)
 
     hists = []
     labels = []
@@ -153,7 +154,8 @@ def compareMass(temp,mDark,decay,dist):
 
     #hists.append(getQCD(histname))
     #labels.append("QCD, H_{T}>1 TeV")
-    
+
+    if not os.path.exists("plots/compare_mMed"): os.makedirs("plots/compare_mMed")
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
     #    makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
@@ -174,6 +176,7 @@ def compareDecay(mMed,temp,mDark,dist):
     #hists.append(getQCD(histname))
     #labels.append("QCD, H_{T}>1 TeV")
 
+    if not os.path.exists("plots/compare_decay"): os.makedirs("plots/compare_decay")
     compare1D(hists,labels,"compare_decay/mMed{}_temp{}_mDark{}_{}".format(mMed,temp,mDark,histname))
 
 
