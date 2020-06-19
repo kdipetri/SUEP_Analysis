@@ -22,7 +22,8 @@ void doHistos::Loop(std::string s_sample,bool isMC)
    // disable all branches
    fChain->SetBranchStatus("*",0);
    // only activate branches that are used (faster)
-   vector<string> branches_used{
+   std::vector<string> branches_used{
+      "HT",
       "Jets",
       "Jets_ID",
       "JetsAK8",
@@ -30,8 +31,11 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       "Tracks",
       "Tracks_fromPV0",
       "Tracks_matchedToPFCandidate",
+      "GenParticles",
+      "GenParticles_PdgId",
    };
    for(const auto& branch : branches_used) fChain->SetBranchStatus(branch.c_str(),1);
+
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -88,9 +92,6 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
       	jetsAK8.push_back(jetAK8);
       }
-      plotter.Plot1D(Form("%s_testHT",s_sample.c_str()),";H_{T} [GeV]", ht, 20,0,2000 );
-      plotter.Plot1D(Form("%s_HT"    ,s_sample.c_str()),";H_{T} [GeV]", HT, 20,0,2000 );
-      plotter.Plot1D(Form("%s_njets" ,s_sample.c_str()),";n_{jets}", njets, 20,-0.5,19.5 );
       
 
       /*
@@ -114,27 +115,54 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       	
       	tracks.push_back(track);
       	npfs+=1;
+        plotter.Plot1D(Form("%s_chpfs_pt" ,s_sample.c_str()),";chPFs pT", track.p4.Pt(), 100,0,10);
       }      
       plotter.Plot1D(Form("%s_nchpfs" ,s_sample.c_str()),";n_{chpfs}", npfs, 100,0,1000);
 
       // * 
+      // Find the higgs
+      // * 
+      TLorentzVector scalar;
+      for (unsigned int i=0; i < GenParticles_PdgId->size(); i++)
+      {
+        if (GenParticles_PdgId->at(i)==25) scalar = GenParticles->at(i);
+      }
+      plotter.Plot1D(Form("%s_scalar_pt"  ,s_sample.c_str()),";scalar pT"  , scalar.Pt() , 100,0,1000);
+      plotter.Plot1D(Form("%s_scalar_eta" ,s_sample.c_str()),";scalar eta" , scalar.Eta(), 100,-3.5,3.5);
+      plotter.Plot1D(Form("%s_scalar_phi" ,s_sample.c_str()),";scalar phi" , scalar.Phi(), 100,-3.5,3.5);
+      plotter.Plot1D(Form("%s_scalar_m"   ,s_sample.c_str()),";scalar mass", scalar.M()  , 100,0,1000);
+
+      // * 
       // Pass HT or jet triggers 
       // * 
-      if (ht < 1200 && lead_jet_pt < 500) continue;
+      if (ht < 500) continue;
+      //if (ht < 1200 && lead_jet_pt < 500) continue;
 
+      // Post trigger higgs plots
+      plotter.Plot1D(Form("%s_trig_scalar_pt"  ,s_sample.c_str()),";scalar pT"  , scalar.Pt() , 100,0,1000);
+      plotter.Plot1D(Form("%s_trig_scalar_eta" ,s_sample.c_str()),";scalar eta" , scalar.Eta(), 100,-3.5,3.5);
+      plotter.Plot1D(Form("%s_trig_scalar_phi" ,s_sample.c_str()),";scalar phi" , scalar.Phi(), 100,-3.5,3.5);
+      plotter.Plot1D(Form("%s_trig_scalar_m"   ,s_sample.c_str()),";scalar mass", scalar.M()  , 100,0,1000);
+
+      // Post trigger jet plots
+      plotter.Plot1D(Form("%s_trig_testHT",s_sample.c_str()),";H_{T} [GeV]", ht, 20,0,2000 );
+      plotter.Plot1D(Form("%s_trig_HT"    ,s_sample.c_str()),";H_{T} [GeV]", HT, 20,0,2000 );
+      plotter.Plot1D(Form("%s_trig_njets" ,s_sample.c_str()),";n_{jets}", njets, 20,-0.5,19.5 );
+      
+      // Post trigger track plots
       plotter.Plot1D(Form("%s_trig_nchpfs" ,s_sample.c_str()),";n_{chpfs}", npfs, 100,0,1000);
 
 
       // Event displays with jets that come out of the box
-      eventdisplays_tracks(s_sample,ientry,tracks);
+      //eventdisplays_tracks(s_sample,ientry,tracks);
       //eventdisplays_jets(s_sample,ientry,jets);
       //eventdisplays_jetAK8s(s_sample,ientry,jetsAK8);
 
 
       // Trying different jet cone sizes and algorithms here...
-      makeJets(s_sample, ientry, tracks, 0.8);
-      makeJets(s_sample, ientry, tracks, 1.5);
-      makeJets(s_sample, ientry, tracks, 2.0);
+      //makeJets(s_sample, ientry, tracks, 0.8);
+      //makeJets(s_sample, ientry, tracks, 1.5);
+      //makeJets(s_sample, ientry, tracks, 2.0);
 
 
 
