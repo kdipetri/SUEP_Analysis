@@ -141,7 +141,7 @@ int main(int argc, char* argv[]){
 
     // defaults 
     std::string tree_name = "TreeMaker2/PreSelection";
-    std::string file_name = "infiles/SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_AnalysisTree.root";
+    std::string file_name = "root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP/SUEP_2018_mMed-750_mDark-2_temp-2_decay-darkPho_13TeV-pythia8_AnalysisTree.root";
     std::string sample_name = "mMed-750_mDark-2_temp-2_decay-generic";
     std::string output_name = "mMed-750_mDark-2_temp-2_decay-generic";
 
@@ -150,7 +150,7 @@ int main(int argc, char* argv[]){
     if (argc > 1){
         sample_name = argv[1];
         output_name = argv[1];
-        file_name = Form("infiles/SUEP_2018_%s_13TeV-pythia8_AnalysisTree.root",sample_name.c_str());
+        file_name = Form("root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP/SUEP_2018_%s_13TeV-pythia8_AnalysisTree.root",sample_name.c_str());
     }
 
     std::cout << "Starting SUEP Studies!" << std::endl;
@@ -171,8 +171,7 @@ int main(int argc, char* argv[]){
     analysis.Loop(sample_name,isMC);
 
     // Save histograms here
-    TFile *output_file;
-    output_file = TFile::Open(Form("output/%s.root",output_name.c_str()),"RECREATE");
+    TFile *output_file = TFile::Open(Form("output/%s.root",output_name.c_str()),"RECREATE");
     c1->SetTickx(true);
     c1->SetTicky(true);
     plotter.DrawAll1D(c1);
