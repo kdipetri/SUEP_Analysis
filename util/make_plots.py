@@ -140,9 +140,9 @@ def compare1D(hists,labels,filename):
 def compareMass(temp,mDark,decay,dist):
     mMeds = []
     mMeds.append(125)
-    mMeds.append(400)
-    mMeds.append(750)
-    mMeds.append(1000)
+#    mMeds.append(400)
+#    mMeds.append(750)
+#    mMeds.append(1000)
 
     hists = []
     labels = []
