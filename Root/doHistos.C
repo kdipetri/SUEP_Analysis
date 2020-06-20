@@ -98,15 +98,22 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       Packing Inner Detector Tracks 
       */
       int npfs=0;
+      int npfs_09=0;
+      int npfs_08=0;
+      int npfs_07=0;
       TLorentzVector trk_p4;
       std::vector<Track> tracks; tracks.clear();
       for (unsigned int i = 0; i <Tracks_fromPV0->size(); i++)
       {
 
-      	if (Tracks->at(i).Rho() < 1.0) continue; // pT cut 1 GeV, to be optimized
       	if (abs(Tracks->at(i).Eta()) > 2.5) continue;
       	if (Tracks_fromPV0->at(i) < 2) continue;
       	if (Tracks_matchedToPFCandidate->at(i) == 0) continue;
+        if (Tracks->at(i).Rho() > 0.7) npfs_07 +=1;
+        if (Tracks->at(i).Rho() > 0.8) npfs_08 +=1;
+        if (Tracks->at(i).Rho() > 0.9) npfs_09 +=1;
+        if (Tracks->at(i).Rho() < 1.0) continue; // pT cut 1 GeV, to be optimized
+
 
       	Track track;
 
@@ -150,7 +157,10 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       plotter.Plot1D(Form("%s_trig_njets" ,s_sample.c_str()),";n_{jets}", njets, 20,-0.5,19.5 );
       
       // Post trigger track plots
-      plotter.Plot1D(Form("%s_trig_nchpfs" ,s_sample.c_str()),";n_{chpfs}", npfs, 100,0,1000);
+      plotter.Plot1D(Form("%s_trig_nchpfs"    ,s_sample.c_str()),";n_{chpfs}", npfs, 100,0,1000);
+      plotter.Plot1D(Form("%s_trig_nchpfs_07" ,s_sample.c_str()),";n_{chpfs}", npfs_07, 100,0,1000);
+      plotter.Plot1D(Form("%s_trig_nchpfs_08" ,s_sample.c_str()),";n_{chpfs}", npfs_08, 100,0,1000);
+      plotter.Plot1D(Form("%s_trig_nchpfs_09" ,s_sample.c_str()),";n_{chpfs}", npfs_09, 100,0,1000);
 
 
       // Event displays with jets that come out of the box
