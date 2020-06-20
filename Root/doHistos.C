@@ -3,6 +3,7 @@
 #include "SUEP_Analysis/PlotHelper.h"
 #include "Root/jetStudies.C"
 #include "Root/eventDisplays.C"
+#include "Root/eventShapes.C"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -162,7 +163,8 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       plotter.Plot1D(Form("%s_trig_nchpfs_08" ,s_sample.c_str()),";n_{chpfs}", npfs_08, 100,0,1000);
       plotter.Plot1D(Form("%s_trig_nchpfs_09" ,s_sample.c_str()),";n_{chpfs}", npfs_09, 100,0,1000);
 
-
+      // Event shapes
+      plotEventShapes(s_sample, tracks);
       // Event displays with jets that come out of the box
       //eventdisplays_tracks(s_sample,ientry,tracks);
       //eventdisplays_jets(s_sample,ientry,jets);

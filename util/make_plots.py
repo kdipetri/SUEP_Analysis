@@ -206,6 +206,13 @@ dists.append("trig_nchpfs")
 dists.append("trig_nchpfs_09")    
 dists.append("trig_nchpfs_08")    
 dists.append("trig_nchpfs_07")    
+
+dists.append("trig_evtshape_circularity")    
+dists.append("trig_evtshape_isotropy")    
+dists.append("trig_evtshape_sphericity")    
+dists.append("trig_evtshape_aplanarity")    
+dists.append("trig_evtshape_c")    
+dists.append("trig_evtshape_d")    
 #dists.append("trueNint")
 
 for dist in dists:

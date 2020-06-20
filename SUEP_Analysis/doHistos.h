@@ -12,6 +12,9 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TLorentzVector.h>
+#include <TMatrixDSym.h>
+#include <TMatrixD.h>
+#include <TVectorD.h>
 #include "Math/GenVector/Cartesian3D.h" 
 #include "Math/GenVector/PositionVector3D.h" 
 #include "Math/GenVector/DisplacementVector3D.h" 
