@@ -1,6 +1,7 @@
 import subprocess
 
-filepath="root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP"
+#filepath="root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP"
+filepath="infiles"
 
 samples=[]
 samples.append("mMed-1000_mDark-2_temp-2_decay-darkPhoHad") 

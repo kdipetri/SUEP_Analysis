@@ -15,6 +15,8 @@ def adjust(hist):
     if "nneutrals" in name: 
         hist.GetXaxis().SetRangeUser(0,600)
         hist.GetXaxis().SetTitle("n neutrals")
+    if "isotropy" in name: hist.Rebin()
+    if "circularity" in name: hist.Rebin()
     return
 
 def clean1D(hist):
@@ -37,26 +39,42 @@ def get1D(mMed,mDark,temp,decay,histname):
 
     return hist
 
-def getQCD(histname):
+def qcd_xs(sample):
+    if "QCD_HT200to300"   in sample : return 1559000
+    if "QCD_HT300to500"   in sample : return 311900
+    if "QCD_HT500to700"   in sample : return 29070
+    if "QCD_HT700to1000"  in sample : return 5962
+    if "QCD_HT1000to1500" in sample : return 1207 
+    if "QCD_HT1500to2000" in sample : return 119.9 
+    if "QCD_HT2000toInf"  in sample : return 25.24 
+
+def getQCD(dist):
 
     # Get hist
-    filename1 = "outputs/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8.root"# do slicing later
-    filename2 = "outputs/QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8.root"# do slicing later
-    filename3 = "outputs/QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8.root"# do slicing later
-    f1 = ROOT.TFile.Open(filename1)
-    f2 = ROOT.TFile.Open(filename2)
-    f3 = ROOT.TFile.Open(filename3)
-    hist1 = f1.Get(histname)
-    hist2 = f2.Get(histname)
-    hist3 = f3.Get(histname)
-    hist1.Scale(1207) 
-    hist2.Scale(119.9) 
-    hist3.Scale(25.24) 
-    hist1.Add(hist2)
-    hist2.Add(hist3)
-    clean1D(hist1)
+    samples =[]
+    samples.append("QCD_HT200to300")# do slicing later
+    samples.append("QCD_HT300to500")# do slicing later
+    samples.append("QCD_HT500to700")# do slicing later
+    samples.append("QCD_HT700to1000")# do slicing later
+    samples.append("QCD_HT1000to1500")# do slicing later
+    samples.append("QCD_HT1500to2000")# do slicing later
+    samples.append("QCD_HT2000toInf")# do slicing later
+    
+    hists = []
+    for sample in samples: 
+        f = ROOT.TFile.Open("output/{}.root".format(sample))
+        h = f.Get("{}_{}".format(sample,dist))
+        h.Scale(qcd_xs(sample))
+        h.SetDirectory(0)
+        hists.append(h)
 
-    return hist1
+    hist_final = hists[0].Clone("QCD_"+dist)
+    for i,hist in enumerate(hists):
+        if i>0: hist_final.Add(hist)
+
+    clean1D(hist_final)
+
+    return hist_final
 
 def decay_label(decay):
     if "darkPhoHad" in decay: return "m_{A'}=0.7 GeV"
@@ -66,6 +84,12 @@ def decay_label(decay):
 def label(mMed,mDark,temp,decay):
     #return "(m_{S},m_{#phi},T)=(%i,%i,%i), %s"%(mMed,mDark,temp,decay_label(decay))
     return "m_{S}=%i, m_{#phi}=%i, T=%i, %s"%(mMed,mDark,temp,decay_label(decay))
+
+def doROC(histname):
+    if "nchpfs" in histname: return 1
+    if "isotropy" in histname: return 1
+    if "circularity" in histname: return 1
+    else: return 0 
 
 def makeROC(hists,labels,filename):
     c = ROOT.TCanvas(filename,"",800,800)
@@ -98,7 +122,9 @@ def makeROC(hists,labels,filename):
     
     mgraph.SetTitle(";sig eff;bkg eff")
     mgraph.Draw("AELP")
-    mgraph.GetYaxis().SetRangeUser(0.00000001,1)
+    if "nchpfs" in hists[0].GetName(): mgraph.GetYaxis().SetRangeUser(0.00000001,1)
+    else : mgraph.GetYaxis().SetRangeUser(0.01,1)
+    
     leg.Draw()
     c.SetLogy(1)
     c.SetLogx(0)
@@ -126,7 +152,6 @@ def compare1D(hists,labels,filename):
 
         leg.AddEntry(hist,labels[i],"l")
 
-
     leg.Draw()
     
     c.SetLogy(1)
@@ -151,12 +176,12 @@ def compareMass(temp,mDark,decay,dist):
         hists.append(get1D(mMed,mDark,temp,decay,histname))
         labels.append(label(mMed,mDark,temp,decay))
 
-    #hists.append(getQCD(histname))
-    #labels.append("QCD, H_{T}>1 TeV")
+    hists.append(getQCD(dist))
+    labels.append("QCD")
     
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
-    #    makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
+    if doROC(histname)  : makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
 
 def compareDecay(mMed,temp,mDark,dist):
     decays = []
@@ -178,7 +203,7 @@ def compareDecay(mMed,temp,mDark,dist):
 
 
 dists=[]
-#dists.append("HT") 
+dists.append("HT") 
 #dists.append("NPV")    
 #dists.append("Nint")   
 #dists.append("jetsAK15_constit_pt")    
@@ -209,10 +234,11 @@ dists.append("trig_nchpfs_07")
 
 dists.append("trig_evtshape_circularity")    
 dists.append("trig_evtshape_isotropy")    
-dists.append("trig_evtshape_sphericity")    
-dists.append("trig_evtshape_aplanarity")    
-dists.append("trig_evtshape_c")    
-dists.append("trig_evtshape_d")    
+#dists.append("trig_evtshape_sphericity")    
+#dists.append("trig_evtshape_aplanarity")    
+#dists.append("trig_evtshape_c")    
+#dists.append("trig_evtshape_d")    
+
 #dists.append("trueNint")
 
 for dist in dists:
