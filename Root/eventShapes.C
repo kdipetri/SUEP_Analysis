@@ -163,16 +163,16 @@ void plotEventShapes(std::string sample_name, std::vector<Track> tracks)
 	plotter.Plot1D(Form("%s_trig_evtshape_isotropy"    ,sample_name.c_str()),";isotropy"   , iso, 100,0,1);
 	plotter.Plot1D(Form("%s_trig_evtshape_circularity" ,sample_name.c_str()),";circularity", cir, 100,0,1);
 
-	std::vector<double> eigenValues = compTensorsAndVectors(tracks);
-	double sphere = sphericity(eigenValues);
-	double aplan  = aplanarity(eigenValues);
-	double evt_c  = C(eigenValues);
-	double evt_d  = D(eigenValues);
+	//std::vector<double> eigenValues = compTensorsAndVectors(tracks);
+	//double sphere = sphericity(eigenValues);
+	//double aplan  = aplanarity(eigenValues);
+	//double evt_c  = C(eigenValues);
+	//double evt_d  = D(eigenValues);
 
-	plotter.Plot1D(Form("%s_trig_evtshape_sphericity"   ,sample_name.c_str()),";sphericity" , sphere, 100,0,1);
-	plotter.Plot1D(Form("%s_trig_evtshape_aplanarity" 	,sample_name.c_str()),";aplanarity"	, aplan , 100,0,1);
-	plotter.Plot1D(Form("%s_trig_evtshape_c"    		,sample_name.c_str()),";c"   		, evt_c , 100,0,1);
-	plotter.Plot1D(Form("%s_trig_evtshape_d" 			,sample_name.c_str()),";d"			, evt_d , 100,0,1);
+	//plotter.Plot1D(Form("%s_trig_evtshape_sphericity"   ,sample_name.c_str()),";sphericity" , sphere, 100,0,1);
+	//plotter.Plot1D(Form("%s_trig_evtshape_aplanarity" 	,sample_name.c_str()),";aplanarity"	, aplan , 100,0,1);
+	//plotter.Plot1D(Form("%s_trig_evtshape_c"    		,sample_name.c_str()),";c"   		, evt_c , 100,0,1);
+	//plotter.Plot1D(Form("%s_trig_evtshape_d" 			,sample_name.c_str()),";d"			, evt_d , 100,0,1);
 }
 
 

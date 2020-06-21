@@ -93,8 +93,6 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
       	jetsAK8.push_back(jetAK8);
       }
-      
-
       /*
       Packing Inner Detector Tracks 
       */
@@ -115,7 +113,6 @@ void doHistos::Loop(std::string s_sample,bool isMC)
         if (Tracks->at(i).Rho() > 0.9) npfs_09 +=1;
         if (Tracks->at(i).Rho() < 1.0) continue; // pT cut 1 GeV, to be optimized
 
-
       	Track track;
 
       	trk_p4.SetPtEtaPhiM(Tracks->at(i).Rho(), Tracks->at(i).Eta(), Tracks->at(i).Phi(), 0.13957);
@@ -125,7 +122,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       	npfs+=1;
         plotter.Plot1D(Form("%s_chpfs_pt" ,s_sample.c_str()),";chPFs pT", track.p4.Pt(), 100,0,10);
       }      
-      plotter.Plot1D(Form("%s_nchpfs" ,s_sample.c_str()),";n_{chpfs}", npfs, 100,0,1000);
+      
 
       // * 
       // Find the higgs
@@ -145,6 +142,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // * 
       if (ht < 500) continue;
       //if (ht < 1200 && lead_jet_pt < 500) continue;
+      
 
       // Post trigger higgs plots
       plotter.Plot1D(Form("%s_trig_scalar_pt"  ,s_sample.c_str()),";scalar pT"  , scalar.Pt() , 100,0,1000);
@@ -176,8 +174,6 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       //makeJets(s_sample, ientry, tracks, 1.5);
       //makeJets(s_sample, ientry, tracks, 2.0);
 
-
-
       // Pflow candidates
       // Scan pT threshold 
       // Some Pflow cut...
@@ -201,10 +197,10 @@ int main(int argc, char* argv[]){
 
     // Pick file
     // ./doHistos sample_name
-    if (argc > 1){
+    if (argc > 2){
         sample_name = argv[1];
         output_name = argv[1];
-        file_name = Form("infiles/SUEP_2018_%s_13TeV-pythia8_AnalysisTree.root",sample_name.c_str());
+        file_name = argv[2]; 
     }
 
     std::cout << "Starting SUEP Studies!" << std::endl;
