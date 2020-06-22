@@ -11,7 +11,7 @@ def adjust(hist):
     if "ntracks" in name: hist.GetXaxis().SetRangeUser(0,600)
     #if "npfs" in name: hist.Rebin()
     if "nchpfs" in name: 
-        hist.GetXaxis().SetRangeUser(0,400)
+        hist.GetXaxis().SetRangeUser(0,500)
     if "nneutrals" in name: 
         hist.GetXaxis().SetRangeUser(0,600)
         hist.GetXaxis().SetTitle("n neutrals")
@@ -34,6 +34,7 @@ def get1D(mMed,mDark,temp,decay,histname):
     # Get hist
     filename = "output/mMed-{}_mDark-{}_temp-{}_decay-{}.root".format(mMed,mDark,temp,decay)
     f = ROOT.TFile.Open(filename)
+    print(histname)
     hist = f.Get(histname)
     clean1D(hist)
 
@@ -127,10 +128,13 @@ def makeROC(hists,labels,filename):
     
     leg.Draw()
     c.SetLogy(1)
+    c.SetLogx(1)
+    mgraph.GetXaxis().SetRangeUser(0.001,1)
+    c.Print("plots/{}_logx.png".format(filename))
     c.SetLogx(0)
-    c.Print("plots/{}.png".format(filename))
+    mgraph.GetXaxis().SetRangeUser(0,1)
+    c.Print("plots/{}_linx.png".format(filename))
     c.SetLogy(0)
-    c.SetLogx(0)
     
 
 def compare1D(hists,labels,filename):
@@ -176,8 +180,9 @@ def compareMass(temp,mDark,decay,dist):
         hists.append(get1D(mMed,mDark,temp,decay,histname))
         labels.append(label(mMed,mDark,temp,decay))
 
-    hists.append(getQCD(dist))
-    labels.append("QCD")
+    if "scalar" not in dist and "trig_jet" not in dist: 
+        hists.append(getQCD(dist))
+        labels.append("QCD")
     
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
@@ -227,6 +232,19 @@ dists.append("HT")
 #dists.append("nchpfs") 
 #dists.append("njets")  
 #dists.append("testHT") 
+dists.append("trig_jet_min_dR")
+dists.append("trig_jet_min_dPhi")   
+dists.append("trig_jet_scalar_dR")   
+dists.append("trig_jet_scalar_dR") 
+dists.append("trig_jet_pt") 
+
+dists.append("trig_jet_max_min_dR")
+dists.append("trig_jet_max_min_dPhi")   
+dists.append("trig_jet_max_scalar_dR")   
+dists.append("trig_jet_max_scalar_dR") 
+dists.append("trig_jet_max_pt") 
+
+
 dists.append("trig_nchpfs")    
 dists.append("trig_nchpfs_09")    
 dists.append("trig_nchpfs_08")    
@@ -234,6 +252,12 @@ dists.append("trig_nchpfs_07")
 
 dists.append("trig_evtshape_circularity")    
 dists.append("trig_evtshape_isotropy")    
+
+dists.append("scalar_pt")    
+dists.append("scalar_eta")    
+dists.append("scalar_phi")    
+dists.append("scalar_m")    
+
 #dists.append("trig_evtshape_sphericity")    
 #dists.append("trig_evtshape_aplanarity")    
 #dists.append("trig_evtshape_c")    
@@ -242,7 +266,7 @@ dists.append("trig_evtshape_isotropy")
 #dists.append("trueNint")
 
 for dist in dists:
-    #compareMass(2,2,"darkPho",dist)
     #compareMass(2,2,"darkPhoHad",dist)
+    #compareMass(2,2,"darkPho",dist)
     compareMass(2,2,"generic",dist)
     #compareDecay(750,2,2,dist)

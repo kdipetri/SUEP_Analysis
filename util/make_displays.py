@@ -10,7 +10,8 @@ def jetGraph(c,hist):
 	graph = ROOT.TGraph()
 	i=0
 	
-	jet_size = int(hist.GetName().split("_")[-1].strip("jetsAK"))
+	size_str = hist.GetName().split("_")[-1].strip("jetsAK")
+	jet_size = 4. if size_str == "" else int(size_str) 
 
 	txt = ROOT.TText()
 	txt.SetNDC()
@@ -31,7 +32,7 @@ def jetGraph(c,hist):
 
 	graph.SetMarkerStyle(24)
 	graph.SetMarkerColor(ROOT.kBlack)
-	graph.SetMarkerSize(jet_size)
+	graph.SetMarkerSize(2.0*jet_size)
 	graph.Draw("P")
 	return graph
 
@@ -66,13 +67,15 @@ def getEvents(filename):
 
 	        #c.Print("plots/displays/{}_{}.png".format(sample(filename),event(filename,name)))
 
-	        hist_jets=f.Get(name.strip("tracks")+"jetsAK20")
+	        hist_jets=f.Get(name.strip("tracks")+"jets")
+	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK20")
 	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK15")
 	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK8")
 	        graph_jets=jetGraph(c,hist_jets)
 	        graph_jets.Draw("P")
 
-	        c.Print("plots/displays/{}_{}_jetsAK20.png".format(sample(filename),event(filename,name)))
+	        c.Print("plots/displays/{}_{}_jets.png".format(sample(filename),event(filename,name)))
+	        #c.Print("plots/displays/{}_{}_jetsAK20.png".format(sample(filename),event(filename,name)))
 	        #c.Print("plots/displays/{}_{}_jetsAK15.png".format(sample(filename),event(filename,name)))
 	        #c.Print("plots/displays/{}_{}_jetsAK8.png".format(sample(filename),event(filename,name)))
             
