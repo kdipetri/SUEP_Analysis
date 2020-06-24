@@ -11,6 +11,10 @@ struct Jet {
   bool id;
   int multiplicity;
   int chargedMultiplicity;
+  float isolation;
+  float scalar_dPhi;
+  float scalar_dR;
+  float min_dR;
 };
 
 struct JetAK8 {

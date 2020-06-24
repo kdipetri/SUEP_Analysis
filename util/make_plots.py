@@ -88,8 +88,8 @@ def label(mMed,mDark,temp,decay):
 
 def doROC(histname):
     if "nchpfs" in histname: return 1
-    if "isotropy" in histname: return 1
-    if "circularity" in histname: return 1
+    #if "isotropy" in histname: return 1
+    #if "circularity" in histname: return 1
     else: return 0 
 
 def makeROC(hists,labels,filename):
@@ -180,7 +180,7 @@ def compareMass(temp,mDark,decay,dist):
         hists.append(get1D(mMed,mDark,temp,decay,histname))
         labels.append(label(mMed,mDark,temp,decay))
 
-    if "scalar" not in dist and "trig_jet" not in dist: 
+    if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
         hists.append(getQCD(dist))
         labels.append("QCD")
     
@@ -232,17 +232,22 @@ dists.append("HT")
 #dists.append("nchpfs") 
 #dists.append("njets")  
 #dists.append("testHT") 
-dists.append("trig_jet_min_dR")
-dists.append("trig_jet_min_dPhi")   
-dists.append("trig_jet_scalar_dR")   
-dists.append("trig_jet_scalar_dR") 
-dists.append("trig_jet_pt") 
 
-dists.append("trig_jet_max_min_dR")
-dists.append("trig_jet_max_min_dPhi")   
-dists.append("trig_jet_max_scalar_dR")   
-dists.append("trig_jet_max_scalar_dR") 
-dists.append("trig_jet_max_pt") 
+dists.append("trig_isrjet_min_dR") 
+dists.append("trig_isrjet_pt") 
+dists.append("trig_isrjet_scalar_dPhi")    
+dists.append("trig_isrjet_scalar_dR")
+dists.append("trig_isrjet_isolation")
+dists.append("trig_isrjet_multiplicity")
+
+dists.append("trig_suepjet_min_dR") 
+dists.append("trig_suepjet_pt") 
+dists.append("trig_suepjet_scalar_dPhi")    
+dists.append("trig_suepjet_scalar_dR")
+dists.append("trig_suepjet_isolation")
+dists.append("trig_suepjet_multiplicity")
+
+
 
 
 dists.append("trig_nchpfs")    
@@ -250,18 +255,26 @@ dists.append("trig_nchpfs_09")
 dists.append("trig_nchpfs_08")    
 dists.append("trig_nchpfs_07")    
 
-dists.append("trig_evtshape_circularity")    
-dists.append("trig_evtshape_isotropy")    
+dists.append("noboost_trig_evtshape_circularity")    
+dists.append("noboost_trig_evtshape_isotropy")    
+dists.append("noboost_trig_evtshape_sphericity")    
+dists.append("noboost_trig_evtshape_aplanarity")    
+dists.append("noboost_trig_evtshape_c")    
+dists.append("noboost_trig_evtshape_d")  
+
+dists.append("boosted_trig_evtshape_circularity")    
+dists.append("boosted_trig_evtshape_isotropy")    
+dists.append("boosted_trig_evtshape_sphericity")    
+dists.append("boosted_trig_evtshape_aplanarity")    
+dists.append("boosted_trig_evtshape_c")    
+dists.append("boosted_trig_evtshape_d")  
 
 dists.append("scalar_pt")    
 dists.append("scalar_eta")    
 dists.append("scalar_phi")    
 dists.append("scalar_m")    
 
-#dists.append("trig_evtshape_sphericity")    
-#dists.append("trig_evtshape_aplanarity")    
-#dists.append("trig_evtshape_c")    
-#dists.append("trig_evtshape_d")    
+  
 
 #dists.append("trueNint")
 

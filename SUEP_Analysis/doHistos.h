@@ -27,8 +27,20 @@
 PlotHelper plotter("");//set up the plotter
 TCanvas *c1 = new TCanvas("c1","c1",800,800);
 
+TLorentzVector scalar;
+int npfs=0;
+int npfs_09=0;
+int npfs_08=0;
+int npfs_07=0;
+int npfs_2=0;
+int njets=0;
+float ht=0;
+float lead_jet_pt=0;
+
 class doHistos {
 public :
+
+
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
