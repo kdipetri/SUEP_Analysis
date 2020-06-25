@@ -180,13 +180,13 @@ def compareMass(temp,mDark,decay,dist):
         hists.append(get1D(mMed,mDark,temp,decay,histname))
         labels.append(label(mMed,mDark,temp,decay))
 
-    if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
-        hists.append(getQCD(dist))
-        labels.append("QCD")
+    #if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
+    #    hists.append(getQCD(dist))
+    #    labels.append("QCD")
     
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
-    if doROC(histname)  : makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
+    #if doROC(histname)  : makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
 
 def compareDecay(mMed,temp,mDark,dist):
     decays = []
@@ -207,79 +207,64 @@ def compareDecay(mMed,temp,mDark,dist):
     compare1D(hists,labels,"compare_decay/mMed{}_temp{}_mDark{}_{}".format(mMed,temp,mDark,histname))
 
 
+sels = []
+#sels.append("all")
+sels.append("scouting")
+sels.append("offline")
+
 dists=[]
-dists.append("HT") 
-#dists.append("NPV")    
-#dists.append("Nint")   
-#dists.append("jetsAK15_constit_pt")    
-#dists.append("jetsAK15_eta")   
-#dists.append("jetsAK15_nconstit")  
-#dists.append("jetsAK15_njets") 
-#dists.append("jetsAK15_phi")   
-#dists.append("jetsAK15_pt")    
-#dists.append("jetsAK20_constit_pt")    
-#dists.append("jetsAK20_eta")   
-#dists.append("jetsAK20_nconstit")  
-#dists.append("jetsAK20_njets") 
-#dists.append("jetsAK20_phi")   
-#dists.append("jetsAK20_pt")    
-#dists.append("jetsAK8_constit_pt") 
-#dists.append("jetsAK8_eta")    
-#dists.append("jetsAK8_nconstit")   
-#dists.append("jetsAK8_njets")  
-#dists.append("jetsAK8_phi")    
-#dists.append("jetsAK8_pt") 
-#dists.append("nchpfs") 
-#dists.append("njets")  
-#dists.append("testHT") 
 
-dists.append("trig_isrjet_min_dR") 
-dists.append("trig_isrjet_pt") 
-dists.append("trig_isrjet_scalar_dPhi")    
-dists.append("trig_isrjet_scalar_dR")
-dists.append("trig_isrjet_isolation")
-dists.append("trig_isrjet_multiplicity")
-
-dists.append("trig_suepjet_min_dR") 
-dists.append("trig_suepjet_pt") 
-dists.append("trig_suepjet_scalar_dPhi")    
-dists.append("trig_suepjet_scalar_dR")
-dists.append("trig_suepjet_isolation")
-dists.append("trig_suepjet_multiplicity")
+#dists.append("trig_isrjet_min_dR") 
+#dists.append("trig_isrjet_pt") 
+#dists.append("trig_isrjet_scalar_dPhi")    
+#dists.append("trig_isrjet_scalar_dR")
+#dists.append("trig_isrjet_isolation")
+#dists.append("trig_isrjet_multiplicity")
+#
+#dists.append("trig_suepjet_min_dR") 
+#dists.append("trig_suepjet_pt") 
+#dists.append("trig_suepjet_scalar_dPhi")    
+#dists.append("trig_suepjet_scalar_dR")
+#dists.append("trig_suepjet_isolation")
+#dists.append("trig_suepjet_multiplicity")
 
 
+dists.append("evtshape_aplanarity")    
+dists.append("evtshape_c")             
+dists.append("evtshape_circularity")   
+dists.append("evtshape_d")             
+dists.append("evtshape_isotropy")      
+dists.append("evtshape_sphericity")    
+                    
+dists.append("jetsAK20_constit_pt")    
+dists.append("jetsAK20_dRscalar")      
+dists.append("jetsAK20_eta")           
+dists.append("jetsAK20_m")             
+dists.append("jetsAK20_nconstit")      
+dists.append("jetsAK20_njets")         
+dists.append("jetsAK20_phi")           
+dists.append("jetsAK20_pt")            
+dists.append("jetsAK20_width")         
 
+dists.append("nchpfs")                 
+dists.append("nchpfs_07")              
+dists.append("nchpfs_08")              
+dists.append("nchpfs_09")              
+dists.append("nchpfs_2") 
 
-dists.append("trig_nchpfs")    
-dists.append("trig_nchpfs_09")    
-dists.append("trig_nchpfs_08")    
-dists.append("trig_nchpfs_07")    
+dists.append("ht")             
+dists.append("njets")  
+dists.append("leadjetpt")  
 
-dists.append("noboost_trig_evtshape_circularity")    
-dists.append("noboost_trig_evtshape_isotropy")    
-dists.append("noboost_trig_evtshape_sphericity")    
-dists.append("noboost_trig_evtshape_aplanarity")    
-dists.append("noboost_trig_evtshape_c")    
-dists.append("noboost_trig_evtshape_d")  
+dists.append("scalar_eta")             
+dists.append("scalar_m")               
+dists.append("scalar_phi")             
+dists.append("scalar_pt")              
 
-dists.append("boosted_trig_evtshape_circularity")    
-dists.append("boosted_trig_evtshape_isotropy")    
-dists.append("boosted_trig_evtshape_sphericity")    
-dists.append("boosted_trig_evtshape_aplanarity")    
-dists.append("boosted_trig_evtshape_c")    
-dists.append("boosted_trig_evtshape_d")  
-
-dists.append("scalar_pt")    
-dists.append("scalar_eta")    
-dists.append("scalar_phi")    
-dists.append("scalar_m")    
-
-  
-
-#dists.append("trueNint")
-
-for dist in dists:
-    #compareMass(2,2,"darkPhoHad",dist)
-    #compareMass(2,2,"darkPho",dist)
-    compareMass(2,2,"generic",dist)
-    #compareDecay(750,2,2,dist)
+for sel in sels: 
+    for dist in dists:
+        name=sel+"_"+dist
+        compareMass(2,2,"darkPhoHad",name)
+        #compareMass(2,2,"darkPho",name)
+        compareMass(2,2,"generic",name)
+        #compareDecay(750,2,2,name)

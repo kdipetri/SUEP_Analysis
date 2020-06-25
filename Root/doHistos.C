@@ -119,8 +119,8 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       njets=0;
       lead_jet_pt=0;
       float max_dphi = 0;
-      Jet lead_jet; 
-      Jet true_isr_jet; // doesn't really work
+      //Jet lead_jet; 
+      //Jet true_isr_jet; // doesn't really work
       TLorentzVector jet_p4;
       std::vector<Jet> jets; jets.clear();
       for (unsigned int i = 0; i <Jets_ID->size(); i++)
@@ -166,20 +166,20 @@ void doHistos::Loop(std::string s_sample,bool isMC)
         //plotter.Plot1D(Form("%s_trig_jet_scalar_dR"  ,s_sample.c_str()),";jet,scalar dPhi", abs(jet.p4.DeltaR(scalar))  , 50, 0, 6.0 );
 
         // Leading jet
-        if ( jet.p4.Pt() > lead_jet_pt ) {
-          lead_jet_pt  = jet.p4.Pt();
-          lead_jet     = jet; 
-        }
+        //if ( jet.p4.Pt() > lead_jet_pt ) {
+        //  lead_jet_pt  = jet.p4.Pt();
+        //  lead_jet     = jet; 
+        //}
         // ISR jet
-        if ( jet.scalar_dPhi > max_dphi ) {
-          max_dphi = jet.scalar_dPhi;
-          true_isr_jet = jet;
-        }
+        //if ( jet.scalar_dPhi > max_dphi ) {
+        //  max_dphi = jet.scalar_dPhi;
+        //  true_isr_jet = jet;
+        //}
 
         jets.push_back(jet);
         index+=1;
       }
-      Jet isr_jet = get_ISR_jet(jets);
+      //Jet isr_jet = get_ISR_jet(jets);
 
       /*
       Fat jets
@@ -254,21 +254,21 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       //
       // Testing ISR jet tagging
       //
-      std::string sel = "suep";
-      for (auto jet : jets){
-        if ( jet.index == true_isr_jet.index ) sel = "isr"; 
-        else sel="suep";
-
-        //std::cout << jet.index <<  " (sel,pt,iso,mult) = (" << sel << " , " << jet.p4.Pt() << " , " << jet.isolation << " , " << jet.multiplicity << " ) " << std::endl;
-        
-        plotter.Plot1D(Form("%s_trig_%sjet_pt"          ,s_sample.c_str(),sel.c_str()),";jet pt"          , jet.p4.Pt()     , 50,0, 1000 );
-        plotter.Plot1D(Form("%s_trig_%sjet_scalar_dR"   ,s_sample.c_str(),sel.c_str()),";jet,scalar dR"   , jet.scalar_dR   , 50, 0, 6.0 );
-        plotter.Plot1D(Form("%s_trig_%sjet_scalar_dPhi" ,s_sample.c_str(),sel.c_str()),";jet,scalar dPhi" , jet.scalar_dPhi , 50, 0, 6.0 );
-        plotter.Plot1D(Form("%s_trig_%sjet_isolation"   ,s_sample.c_str(),sel.c_str()),";jet isolation"   , jet.isolation   , 50, 0, 1.0 );
-        plotter.Plot1D(Form("%s_trig_%sjet_multiplicity",s_sample.c_str(),sel.c_str()),";jet multiplicity", jet.multiplicity, 50, 0, 100 );
-        plotter.Plot1D(Form("%s_trig_%sjet_min_dR"      ,s_sample.c_str(),sel.c_str()),";jet,jet min dR"  , jet.min_dR      , 50, 0, 6.0 );
-
-      }
+      //std::string sel = "suep";
+      //for (auto jet : jets){
+      //  if ( jet.index == true_isr_jet.index ) sel = "isr"; 
+      //  else sel="suep";
+      //
+      //  //std::cout << jet.index <<  " (sel,pt,iso,mult) = (" << sel << " , " << jet.p4.Pt() << " , " << jet.isolation << " , " << jet.multiplicity << " ) " << std::endl;
+      //  
+      //  plotter.Plot1D(Form("%s_trig_%sjet_pt"          ,s_sample.c_str(),sel.c_str()),";jet pt"          , jet.p4.Pt()     , 50,0, 1000 );
+      //  plotter.Plot1D(Form("%s_trig_%sjet_scalar_dR"   ,s_sample.c_str(),sel.c_str()),";jet,scalar dR"   , jet.scalar_dR   , 50, 0, 6.0 );
+      //  plotter.Plot1D(Form("%s_trig_%sjet_scalar_dPhi" ,s_sample.c_str(),sel.c_str()),";jet,scalar dPhi" , jet.scalar_dPhi , 50, 0, 6.0 );
+      //  plotter.Plot1D(Form("%s_trig_%sjet_isolation"   ,s_sample.c_str(),sel.c_str()),";jet isolation"   , jet.isolation   , 50, 0, 1.0 );
+      //  plotter.Plot1D(Form("%s_trig_%sjet_multiplicity",s_sample.c_str(),sel.c_str()),";jet multiplicity", jet.multiplicity, 50, 0, 100 );
+      //  plotter.Plot1D(Form("%s_trig_%sjet_min_dR"      ,s_sample.c_str(),sel.c_str()),";jet,jet min dR"  , jet.min_dR      , 50, 0, 6.0 );
+      //
+      //}
 
 
       // Try boosting - fails... bad ISR selection
