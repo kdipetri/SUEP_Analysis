@@ -20,6 +20,7 @@
 #include "Math/GenVector/DisplacementVector3D.h" 
 #include "SUEP_Analysis/PlotHelper.h"
 #include "SUEP_Analysis/PhysicsObjects.h"
+#include "fastjet/ClusterSequence.hh"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"

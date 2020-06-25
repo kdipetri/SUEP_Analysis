@@ -173,6 +173,11 @@ void plotEventShapes(std::string sample_name, std::string sel, std::vector<Track
 	plotter.Plot1D(Form("%s_%s_evtshape_aplanarity"  ,sample_name.c_str(), sel.c_str()),";aplanarity"	, aplan , 100,0,1);
 	plotter.Plot1D(Form("%s_%s_evtshape_c"    		   ,sample_name.c_str(), sel.c_str()),";c"   		    , evt_c , 100,0,1);
 	plotter.Plot1D(Form("%s_%s_evtshape_d" 			     ,sample_name.c_str(), sel.c_str()),";d"			      , evt_d , 100,0,1);
+
+  // useful for bkg estimation
+  plotter.Plot2D(Form("%s_%s_evtshape_nchpfs_v_circularity" ,sample_name.c_str(), sel.c_str()),";circularity;ntracks" , cir,npfs , 100,0,1, 100,0,1000);
+  plotter.Plot2D(Form("%s_%s_evtshape_ht_v_circularity"     ,sample_name.c_str(), sel.c_str()),";circularity;ht [GeV]", cir,ht   , 100,0,1, 100,0,3000);
+  plotter.Plot2D(Form("%s_%s_evtshape_njets_v_circularity"  ,sample_name.c_str(), sel.c_str()),";circularity;njets"   , cir,njets, 100,0,1, 20,-0.5, 19.5);
 }
 
 

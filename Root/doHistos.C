@@ -70,11 +70,11 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // * 
       // Find the higgs
       // * 
-      TLorentzVector scalar;
       for (unsigned int i=0; i < GenParticles_PdgId->size(); i++)
       {
         if (GenParticles_PdgId->at(i)==25) scalar = GenParticles->at(i);
       }
+
 
       /*
       Packing Inner Detector Tracks 
@@ -120,7 +120,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       lead_jet_pt=0;
       float max_dphi = 0;
       Jet lead_jet; 
-      Jet true_isr_jet;
+      Jet true_isr_jet; // doesn't really work
       TLorentzVector jet_p4;
       std::vector<Jet> jets; jets.clear();
       for (unsigned int i = 0; i <Jets_ID->size(); i++)
@@ -149,7 +149,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
            num += track.p4;
         }
         
-        jet.isolation = (num.Pt())/jet.p4.Pt();
+        jet.isolation = (num.Pt())/jet.p4.Pt(); // fake
 
         jet.scalar_dPhi = abs(jet.p4.DeltaPhi(scalar));
         jet.scalar_dR   = jet.p4.DeltaR(scalar);
@@ -209,10 +209,11 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // For a little speedup
       if (ht < 500) continue;
 
+      // old
       // Trying different jet cone sizes and algorithms here...
-      makeJets(s_sample, ientry, tracks, 0.8);
-      makeJets(s_sample, ientry, tracks, 1.5);
-      makeJets(s_sample, ientry, tracks, 2.0); // for hemisphere analysis
+      //makeJets(s_sample, ientry, tracks, 0.8);
+      //makeJets(s_sample, ientry, tracks, 1.5);
+      //makeJets(s_sample, ientry, tracks, 2.0); // for hemisphere analysis
 
       // * 
       // Pass scouting or offline triggers
@@ -224,12 +225,16 @@ void doHistos::Loop(std::string s_sample,bool isMC)
   
         plotEventShapes(s_sample, "scouting", tracks);
 
+        fatjet_plots(s_sample, "scouting" ,tracks, ientry, 2.0);
+
       }
       if (ht > 1200 || lead_jet_pt > 500) {
 
         basic_kinematics(s_sample,"offline");
   
         plotEventShapes(s_sample, "offline", tracks);
+
+        fatjet_plots(s_sample, "offline" ,tracks, ientry, 2.0);
 
       }
       
@@ -245,10 +250,10 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
       //
 
+
       //
       // Testing ISR jet tagging
       //
-
       std::string sel = "suep";
       for (auto jet : jets){
         if ( jet.index == true_isr_jet.index ) sel = "isr"; 
