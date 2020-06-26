@@ -65,6 +65,7 @@ def getQCD(dist):
     for sample in samples: 
         f = ROOT.TFile.Open("output/{}.root".format(sample))
         h = f.Get("{}_{}".format(sample,dist))
+        if not h: continue
         h.Scale(qcd_xs(sample))
         h.SetDirectory(0)
         hists.append(h)
@@ -88,8 +89,8 @@ def label(mMed,mDark,temp,decay):
 
 def doROC(histname):
     if "nchpfs" in histname: return 1
-    #if "isotropy" in histname: return 1
-    #if "circularity" in histname: return 1
+    if "evtshape" in histname: return 1
+    if "suep" in histname: return 1
     else: return 0 
 
 def makeROC(hists,labels,filename):
@@ -181,12 +182,12 @@ def compareMass(temp,mDark,decay,dist):
         labels.append(label(mMed,mDark,temp,decay))
 
     #if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
-    #    hists.append(getQCD(dist))
-    #    labels.append("QCD")
+    hists.append(getQCD(dist))
+    labels.append("QCD")
     
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
-    #if doROC(histname)  : makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
+    if doROC(histname)  : makeROC(hists,labels,"roc_curve/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
 
 def compareDecay(mMed,temp,mDark,dist):
     decays = []
@@ -245,6 +246,15 @@ dists.append("jetsAK20_njets")
 dists.append("jetsAK20_phi")           
 dists.append("jetsAK20_pt")            
 dists.append("jetsAK20_width")         
+
+#dists.append("jetsAK15_suep_constit_pt")    
+#dists.append("jetsAK15_suep_dRscalar")      
+#dists.append("jetsAK15_suep_eta")           
+#dists.append("jetsAK15_suep_m")             
+#dists.append("jetsAK15_suep_nconstit")      
+#dists.append("jetsAK15_suep_phi")           
+#dists.append("jetsAK15_suep_pt")            
+#dists.append("jetsAK15_suep_width") 
 
 dists.append("jetsAK20_suep_constit_pt")    
 dists.append("jetsAK20_suep_dRscalar")      

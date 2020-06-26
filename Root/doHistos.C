@@ -226,6 +226,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
         plotEventShapes(s_sample, "scouting", tracks);
 
         fatjet_plots(s_sample, "scouting" ,tracks, ientry, 2.0);
+        fatjet_plots(s_sample, "scouting" ,tracks, ientry, 1.5);
 
       }
       if (ht > 1200 || lead_jet_pt > 500) {
@@ -235,6 +236,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
         plotEventShapes(s_sample, "offline", tracks);
 
         fatjet_plots(s_sample, "offline" ,tracks, ientry, 2.0);
+        fatjet_plots(s_sample, "offline" ,tracks, ientry, 1.5);
 
       }
       
