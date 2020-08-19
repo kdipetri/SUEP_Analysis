@@ -12,11 +12,22 @@ def adjust(hist):
     #if "npfs" in name: hist.Rebin()
     if "nchpfs" in name: 
         hist.GetXaxis().SetRangeUser(0,500)
+
     if "nneutrals" in name: 
         hist.GetXaxis().SetRangeUser(0,600)
         hist.GetXaxis().SetTitle("n neutrals")
     if "isotropy" in name: hist.Rebin()
     if "circularity" in name: hist.Rebin()
+    if "all_nchpfs_2" in name: hist.GetXaxis().SetRangeUser(0,300)
+    if "all_nchpfs" in name: hist.GetXaxis().SetRangeUser(0,500)
+    if "suep_pt" in name: hist.Rebin(4)
+    if "dRtruth" in name: hist.Rebin()
+    if "offline" in name and "suep_m" in name : hist.Rebin()
+    if "offline" in name and "nconst" in name : hist.Rebin()
+    if "width" in name : hist.GetXaxis().SetRangeUser(0,2)
+    if "15_suep_width" in name : 
+        hist.Rebin()
+        hist.GetXaxis().SetRangeUser(0,1.5)
     return
 
 def clean1D(hist):
@@ -36,9 +47,10 @@ def get1D(mMed,mDark,temp,decay,histname):
     f = ROOT.TFile.Open(filename)
     print(histname)
     hist = f.Get(histname)
-    clean1D(hist)
-
-    return hist
+    if hist : 
+        clean1D(hist)
+        return hist
+    else : return 0
 
 def qcd_xs(sample):
     if "QCD_HT200to300"   in sample : return 1559000
@@ -90,7 +102,7 @@ def label(mMed,mDark,temp,decay):
 def doROC(histname):
     if "nchpfs" in histname: return 1
     if "evtshape" in histname: return 1
-    if "suep" in histname: return 1
+    if "suep" in histname and "dRtruth" not in histname: return 1
     else: return 0 
 
 def makeROC(hists,labels,filename):
@@ -147,7 +159,8 @@ def compare1D(hists,labels,filename):
     leg.SetBorderSize(0)
 
     ymax = 0
-    for i,hist in enumerate(hists): 
+    for i,hist in enumerate(hists):
+        #print(i,hist) 
         hist.SetLineColor(colors[i])
         if "QCD" in labels[i]: hist.SetLineColor(ROOT.kBlack) 
         if i==0: hist.Draw("hist")
@@ -178,12 +191,15 @@ def compareMass(temp,mDark,decay,dist):
     for mMed in mMeds:
         histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}".format(mMed,mDark,temp,decay,dist)
         #print(histname)
-        hists.append(get1D(mMed,mDark,temp,decay,histname))
-        labels.append(label(mMed,mDark,temp,decay))
+        hist = get1D(mMed,mDark,temp,decay,histname)
+        if hist : 
+            hists.append(hist)
+            labels.append(label(mMed,mDark,temp,decay))
 
     #if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
-    hists.append(getQCD(dist))
-    labels.append("QCD")
+    if "truth" not in dist: 
+        hists.append(getQCD(dist))
+        labels.append("QCD")
     
     compare1D(hists,labels,"compare_mMed/temp{}_mDark{}_decay_{}_{}".format(temp,mDark,decay,histname))
     #if histname=="h_pf_ntracks": 
@@ -199,14 +215,24 @@ def compareDecay(mMed,temp,mDark,dist):
     labels = []
     for decay in decays:
         histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}".format(mMed,mDark,temp,decay,dist)
-        hists.append(get1D(mMed,mDark,temp,decay,histname))
-        labels.append(label(mMed,mDark,temp,decay))
+        hist  = get1D(mMed,mDark,temp,decay,histname)
+        if hist: 
+            hists.append(hist)
+            labels.append(label(mMed,mDark,temp,decay))
  
     #hists.append(getQCD(histname))
     #labels.append("QCD, H_{T}>1 TeV")
 
     compare1D(hists,labels,"compare_decay/mMed{}_temp{}_mDark{}_{}".format(mMed,temp,mDark,histname))
 
+name = "all_nchpfs_2"
+compareMass(2,2,"darkPhoHad",name)
+name = "all_nchpfs"
+compareMass(2,2,"darkPhoHad",name)
+name = "all_nchpfs_2"
+compareMass(2,2,"generic",name)
+name = "all_nchpfs"
+compareMass(2,2,"generic",name)
 
 sels = []
 #sels.append("all")
@@ -237,33 +263,44 @@ dists.append("evtshape_d")
 dists.append("evtshape_isotropy")      
 dists.append("evtshape_sphericity")    
                     
-dists.append("jetsAK20_constit_pt")    
-dists.append("jetsAK20_dRscalar")      
-dists.append("jetsAK20_eta")           
-dists.append("jetsAK20_m")             
-dists.append("jetsAK20_nconstit")      
-dists.append("jetsAK20_njets")         
-dists.append("jetsAK20_phi")           
-dists.append("jetsAK20_pt")            
-dists.append("jetsAK20_width")         
+dists.append("jetsAK15_constit_pt")    
+dists.append("jetsAK15_dRscalar")      
+dists.append("jetsAK15_eta")           
+dists.append("jetsAK15_m")             
+dists.append("jetsAK15_nconstit")      
+dists.append("jetsAK15_njets")         
+dists.append("jetsAK15_phi")           
+dists.append("jetsAK15_pt")            
+dists.append("jetsAK15_width")         
 
-#dists.append("jetsAK15_suep_constit_pt")    
-#dists.append("jetsAK15_suep_dRscalar")      
-#dists.append("jetsAK15_suep_eta")           
-#dists.append("jetsAK15_suep_m")             
-#dists.append("jetsAK15_suep_nconstit")      
-#dists.append("jetsAK15_suep_phi")           
-#dists.append("jetsAK15_suep_pt")            
-#dists.append("jetsAK15_suep_width") 
+dists.append("jetsAK15_suep_constit_pt")    
+dists.append("jetsAK15_suep_dRscalar")      
+dists.append("jetsAK15_suep_dRtruth")      
+dists.append("jetsAK15_suep_eta")           
+dists.append("jetsAK15_suep_m")             
+dists.append("jetsAK15_suep_nconstit")      
+dists.append("jetsAK15_suep_phi")           
+dists.append("jetsAK15_suep_pt")            
+dists.append("jetsAK15_suep_width") 
 
 dists.append("jetsAK20_suep_constit_pt")    
 dists.append("jetsAK20_suep_dRscalar")      
+dists.append("jetsAK20_suep_dRtruth")      
 dists.append("jetsAK20_suep_eta")           
 dists.append("jetsAK20_suep_m")             
 dists.append("jetsAK20_suep_nconstit")      
 dists.append("jetsAK20_suep_phi")           
 dists.append("jetsAK20_suep_pt")            
-dists.append("jetsAK20_suep_width")  
+dists.append("jetsAK20_suep_width") 
+
+#dists.append("jetsAK20_suep_constit_pt")    
+#dists.append("jetsAK20_suep_dRscalar")      
+#dists.append("jetsAK20_suep_eta")           
+#dists.append("jetsAK20_suep_m")             
+#dists.append("jetsAK20_suep_nconstit")      
+#dists.append("jetsAK20_suep_phi")           
+#dists.append("jetsAK20_suep_pt")            
+#dists.append("jetsAK20_suep_width")  
 
 dists.append("nchpfs")                 
 dists.append("nchpfs_07")              
@@ -285,5 +322,7 @@ for sel in sels:
         name=sel+"_"+dist
         compareMass(2,2,"darkPhoHad",name)
         #compareMass(2,2,"darkPho",name)
-        compareMass(2,2,"generic",name)
+        if "dRtruth" not in dist: compareMass(2,2,"generic",name)
         #compareDecay(750,2,2,name)
+
+

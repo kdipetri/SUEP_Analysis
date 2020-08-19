@@ -39,9 +39,11 @@ def trigger_eff(mass,sr="scout",opt="had"):
             
 
 def ntrack_eff(mass,sr="scout",opt="had"):
+    
+    if sr=="scout": 
         if opt=="had":
             if mass==125 : return 0.0001 
-            if mass==400 : return 0.1
+            if mass==400 : return 0.3
             if mass==750 : return 0.95
             if mass==1000: return 1.0 
             if mass>=2000: return 1.0
@@ -50,21 +52,48 @@ def ntrack_eff(mass,sr="scout",opt="had"):
             if mass==400 : return 0.05
             if mass==750 : return 0.6
             if mass==1000: return 0.95
+            if mass>=2000: return 1.0 
+    if sr=="ht":         
+        if opt=="had":
+            if mass==125 : return 0.0001 
+            if mass==400 : return 0.3
+            if mass==750 : return 1.0
+            if mass==1000: return 1.0 
+            if mass>=2000: return 1.0
+        if opt=="gen":
+            if mass==125 : return 0.00001 
+            if mass==400 : return 0.1
+            if mass==750 : return 0.7
+            if mass==1000: return 1.0
             if mass>=2000: return 1.0
 
 def shape_eff(mass,sr="scout",opt="had"):
+    if sr=="scout": # jet mass   
         if opt=="had":
             if mass==125 : return 0.1 
-            if mass==400 : return 0.5
-            if mass==750 : return 0.7
-            if mass==1000: return 0.8 
-            if mass>=2000: return 0.9
+            if mass==400 : return 0.8
+            if mass==750 : return 0.95
+            if mass==1000: return 1.0 
+            if mass>=2000: return 1.0
         if opt=="gen":
-            if mass==125 : return 0.1 
-            if mass==400 : return 0.5
-            if mass==750 : return 0.7
-            if mass==1000: return 0.8
-            if mass>=2000: return 0.9
+            if mass==125 : return 0.01 
+            if mass==400 : return 0.1
+            if mass==750 : return 0.5
+            if mass==1000: return 0.6
+            if mass>=2000: return 0.7
+    if sr=="ht": # jet mass        
+        if opt=="had":
+            if mass==125 : return 0.03 
+            if mass==400 : return 0.25
+            if mass==750 : return 0.95
+            if mass==1000: return 1.0 
+            if mass>=2000: return 1.0
+        if opt=="gen":
+            if mass==125 : return 0.005
+            if mass==400 : return 0.05
+            if mass==750 : return 0.2
+            if mass==1000: return 0.4
+            if mass>=2000: return 0.5
 
 
 

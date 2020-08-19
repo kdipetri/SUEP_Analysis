@@ -26,6 +26,30 @@ Jet get_ISR_jet(std::vector<Jet> jets){
   return isr_jet;
 
 }
+int get_charge(int pdgId){
+  if (abs(pdgId) == 11) return 1;
+  if (abs(pdgId) == 13) return 1;
+  if (abs(pdgId) == 211) return 1;
+  return 0;
+}
+void doTrackMatching(std::string s_sample, std::vector<Track> tracks, std::vector<SUEP_particle> suep_particles ){
+
+  for(auto& track: tracks){
+
+    for(auto& suep_particle: suep_particles){
+
+      if (track.p4.DeltaR(suep_particle.p4) > 0.02) continue;
+      // else found a match
+      suep_particle.isReco = true;
+      track.isSuep = true;
+
+      //plotter.Plot1D(Form("%s_reco_truth_track_dR" ,s_sample.c_str()),";dR", track.p4.DeltaR(suep_particle.p4), 100,0,0.1);
+
+    }
+
+  }
+
+}
 void doHistos::Loop(std::string s_sample,bool isMC)
 {
 	//////////////////////////////////////////////////////
@@ -54,6 +78,8 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       "Tracks_matchedToPFCandidate",
       "GenParticles",
       "GenParticles_PdgId",
+      "GenParticles_ParentId",
+      "GenParticles_Status",
    };
    for(const auto& branch : branches_used) fChain->SetBranchStatus(branch.c_str(),1);
 
@@ -68,12 +94,42 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
 
       // * 
-      // Find the higgs
+      // Find the higgs && pack up final state particles
       // * 
+      SUEP_Jet suep_jet;
+      TLorentzVector suep_particle_p4;
+      std::vector<SUEP_particle> suep_particles; suep_particles.clear();
+      int ntruth=0;
       for (unsigned int i=0; i < GenParticles_PdgId->size(); i++)
       {
         if (GenParticles_PdgId->at(i)==25) scalar = GenParticles->at(i);
+
+        // pack up suep final state particles
+        // Only works for dark pho (had) samples - electrons muons hadrons
+        //std::cout << GenParticles_ParentId->at(i) << " " << GenParticles_Status->at(i) << std::endl;
+        if (GenParticles_ParentId->at(i)==999998 && GenParticles_Status->at(i)==1) {
+          SUEP_particle suep_particle;
+
+          ntruth+=1;
+          suep_particle.p4 = GenParticles->at(i); 
+          suep_particle.pdgId = GenParticles_PdgId->at(i);
+          suep_particle.pt1GeV = ( GenParticles->at(i).Pt() > 1 );
+          suep_particle.eta2p5 = ( abs(GenParticles->at(i).Eta()) < 2.5 );
+          suep_particle.isReco = 0;//set to zero for now
+          suep_particle.charge = get_charge(GenParticles_PdgId->at(i));
+          suep_particles.push_back(suep_particle);
+
+          if (suep_particle.pt1GeV && suep_particle.eta2p5 && suep_particle.charge==1) { // add reco requirement later...
+            suep_jet.p4+= suep_particle.p4;
+            suep_jet.nTruthTracks+=1;
+          }
+
+
+        }
       }
+      //std::cout << "NTRUTH = " << ntruth << std::endl;
+      plotter.Plot1D(Form("%s_ntruth_final_state" ,s_sample.c_str()),";ntruth", ntruth, 100,0,500);
+
 
 
       /*
@@ -102,12 +158,14 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
       	trk_p4.SetPtEtaPhiM(Tracks->at(i).Rho(), Tracks->at(i).Eta(), Tracks->at(i).Phi(), 0.13957);
       	track.p4 = trk_p4; 
+        track.isSuep = false;
       	
       	tracks.push_back(track);
       	npfs+=1;
         plotter.Plot1D(Form("%s_chpfs_pt" ,s_sample.c_str()),";chPFs pT", track.p4.Pt(), 100,0,10);
       }
-      // Post track plots
+      // Post track making truth matching
+      //doTrackMatching(s_sample,tracks,suep_particles);
       
     
       
@@ -225,8 +283,10 @@ void doHistos::Loop(std::string s_sample,bool isMC)
   
         plotEventShapes(s_sample, "scouting", tracks);
 
-        fatjet_plots(s_sample, "scouting" ,tracks, ientry, 2.0);
-        fatjet_plots(s_sample, "scouting" ,tracks, ientry, 1.5);
+        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 2.0);
+        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.5);
+        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
+
 
       }
       if (ht > 1200 || lead_jet_pt > 500) {
@@ -235,8 +295,11 @@ void doHistos::Loop(std::string s_sample,bool isMC)
   
         plotEventShapes(s_sample, "offline", tracks);
 
-        fatjet_plots(s_sample, "offline" ,tracks, ientry, 2.0);
-        fatjet_plots(s_sample, "offline" ,tracks, ientry, 1.5);
+        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
+        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
+        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
+        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
+        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
 
       }
       

@@ -37,8 +37,11 @@ def jetGraph(c,hist):
 	return graph
 
 def clean2D(hist):
-	hist.GetZaxis().SetTitle("pflow pT [GeV]")
+	hist.GetZaxis().SetTitle("track pT [GeV]")
+	hist.GetYaxis().SetTitle("#phi")
+	hist.GetXaxis().SetTitle("#eta")
 	hist.GetZaxis().SetTitleOffset(1.3)
+	hist.GetXaxis().SetTitleOffset(0.9)
 	return
 
 def sample(f):
@@ -64,20 +67,23 @@ def getEvents(filename):
 	        hist=f.Get(name)
 	        clean2D(hist)
 	        hist.Draw("COLZ")
+	        c.Print("plots/displays/{}_{}_tracks.png".format(sample(filename),event(filename,name)))
 
 	        #c.Print("plots/displays/{}_{}.png".format(sample(filename),event(filename,name)))
 
-	        hist_jets=f.Get(name.strip("tracks")+"jets")
+	        #hist_jets=f.Get(name.strip("tracks")+"jets")
 	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK20")
 	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK15")
 	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK8")
-	        graph_jets=jetGraph(c,hist_jets)
-	        graph_jets.Draw("P")
+	        #hist_jets=f.Get(name.strip("tracks")+"jetsAK18")
+	        #graph_jets=jetGraph(c,hist_jets)
+	        #graph_jets.Draw("P")
 
-	        c.Print("plots/displays/{}_{}_jets.png".format(sample(filename),event(filename,name)))
+	        #c.Print("plots/displays/{}_{}_jets.png".format(sample(filename),event(filename,name)))
 	        #c.Print("plots/displays/{}_{}_jetsAK20.png".format(sample(filename),event(filename,name)))
 	        #c.Print("plots/displays/{}_{}_jetsAK15.png".format(sample(filename),event(filename,name)))
 	        #c.Print("plots/displays/{}_{}_jetsAK8.png".format(sample(filename),event(filename,name)))
+	        #c.Print("plots/displays/{}_{}_jetsAK18.png".format(sample(filename),event(filename,name)))
             
 
 files=[]
@@ -85,6 +91,8 @@ files.append("output/mMed-125_mDark-2_temp-2_decay-generic.root")
 files.append("output/mMed-400_mDark-2_temp-2_decay-generic.root")
 files.append("output/mMed-750_mDark-2_temp-2_decay-generic.root")
 files.append("output/mMed-1000_mDark-2_temp-2_decay-generic.root")
+files.append("output/QCD_HT1000to1500.root")
+files.append("output/QCD_HT500to700.root")
 
 
 for f in files: 
