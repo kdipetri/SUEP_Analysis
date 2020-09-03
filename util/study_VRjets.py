@@ -24,6 +24,7 @@ def adjust(hist):
     if "suep_m" in name: hist.Rebin(3)
     if "suep_pt" in name: hist.Rebin(3)
     if "suep_width" in name: hist.GetXaxis().SetRangeUser(0,2)
+    if "dR" in name: hist.GetXaxis().SetRangeUser(0,3.5)
 
 def clean2D(hist):
     # Clean
@@ -60,7 +61,7 @@ def plot2D(mMed,mDark,temp,decay,sel,dist):
 	hist = get2D(mMed,mDark,temp,decay,histname)
 	hist.Draw("COLZ")
 
-	c.Print("plots/compare_jetsize/2D_{}.png".format(histname))
+	c.Print("plots/study_VRjets/2D_{}.png".format(histname))
 	return
 
 def clean1D(hist):
@@ -128,9 +129,15 @@ def decay_label(decay):
     if "darkPho" in decay: return "m_{A'}=0.5 GeV"
     if "generic" in decay: return "m_{A'}=m_{#phi}/2, A'#rightarrowu#bar{u}"
 
-def label(mMed,decay,size):
+def label(mMed,decay,jettype):
     #return "(m_{S},m_{#phi},T)=(%i,%i,%i), %s"%(mMed,mDark,temp,decay_label(decay))
-    return "m_{S}=%i, %s, anti-k_{T} R=%0.1f"%(mMed,decay_label(decay),size*0.1)
+    jet=""
+    if "AK15"   in jettype: jet = "anti-k_{T} R=1.5"
+    if "VR500"  in jettype: jet = "AKVR #rho=500"
+    if "VR1000" in jettype: jet = "AKVR #rho=1000"
+    if "VR2000" in jettype: jet = "AKVR #rho=2000"
+
+    return "m_{S}=%i, %s, %s"%(mMed,decay_label(decay),jet)
 
 def compare1D(hists,labels,filename):
     c = ROOT.TCanvas(filename,"",800,800)
@@ -142,8 +149,9 @@ def compare1D(hists,labels,filename):
 
     ymax = 0
     for i,hist in enumerate(hists): 
-        hist.SetLineColor(colors[i])
-        if "QCD" in labels[i]: hist.SetLineColor(ROOT.kBlack) 
+        #hist.SetLineColor(colors[i])
+        if "anti-k" in labels[i]: hist.SetLineColor(ROOT.kBlack) 
+        else: hist.SetLineColor(colors[i])
         if i==0: hist.Draw("hist")
         else : hist.Draw("hist same")
 
@@ -212,35 +220,34 @@ def makeROC(hists,labels,filename):
     c.Print("plots/{}_linx.png".format(filename))
     c.SetLogy(0)
 
-def compareJetSize(mMed,mDark,temp,decay,sel,dist):
-    jetsizes = []
-    jetsizes.append(10)
-    jetsizes.append(13)
-    jetsizes.append(15)
-    jetsizes.append(18)
-    jetsizes.append(20)
+def compareJetType(mMed,mDark,temp,decay,sel,dist):
+    jettypes = []
+    jettypes.append("jetsVR500")
+    jettypes.append("jetsVR1000")
+    jettypes.append("jetsVR2000")
+    jettypes.append("jetsAK15")
 
     hists = []
     labels = []
-    for size in jetsizes:
-        histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}_jetsAK{}_{}".format(mMed,mDark,temp,decay,sel,size,dist)
+    for jettype in jettypes:
+        histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}_{}_{}".format(mMed,mDark,temp,decay,sel,jettype,dist)
         #print(histname)
         hist = get1D(mMed,mDark,temp,decay,histname)
         if hist : 
             if "ratio" in histname:
-                print(mMed,decay,dist,size,hist.GetMean())
+                print(mMed,decay,dist,jettype,hist.GetMean())
             hists.append(hist)
-            labels.append(label(mMed,decay,size))
+            labels.append(label(mMed,decay,jettype))
 
     #if "scalar" not in dist and "jet" not in dist and "evtshape" not in dist: 
     #hists.append(getQCD(dist))
     #labels.append("QCD")
     
-    compare1D(hists,labels,"compare_jetsize/mMed{}_temp{}_mDark{}_decay_{}_{}_{}".format(mMed,temp,mDark,decay,sel,histname))
+    compare1D(hists,labels,"study_VRjets/mMed{}_temp{}_mDark{}_decay_{}_{}_{}".format(mMed,temp,mDark,decay,sel,dist))
     #if histname=="h_pf_ntracks": 
     return
 
-def getFixedEff():
+def getFixedEff(sel,dist):
 
     mMeds = []
     mMeds.append(125)
@@ -248,34 +255,32 @@ def getFixedEff():
     mMeds.append(750)
     mMeds.append(1000)
 
-    jetsizes = []
-    jetsizes.append(10)
-    jetsizes.append(15)
-    jetsizes.append(20)
+    jettypes = []
+    jettypes.append("jetsVR500")
+    jettypes.append("jetsVR1000")
+    jettypes.append("jetsVR2000")
 
-    dist="suep_width"
-    sel="offline"
     decay="darkPhoHad"
     mDark=2
     temp=2
 
-    for size in jetsizes: 
+    for jettype in jettypes: 
         hists = []
         labels = []
         for mMed in mMeds:
-            histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}_jetsAK{}_{}".format(mMed,mDark,temp,decay,sel,size,dist)
+            histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}_{}_{}".format(mMed,mDark,temp,decay,sel,jettype,dist)
             #print(histname)
             hist = get1D(mMed,mDark,temp,decay,histname)
             if hist : 
                 hists.append(hist)
-                labels.append(label(mMed,decay,size))
+                labels.append(label(mMed,decay,jettype))
     
-        hists.append(getQCD("{}_jetsAK{}_{}".format(sel,size,dist)))
-        labels.append("QCD")
+        #hists.append(getQCD("{}_jetsAK{}_{}".format(sel,size,dist)))
+        #labels.append("QCD")
         
-        compare1D(hists,labels,"compare_jetsize/scanEff_temp{}_mDark{}_decay_{}_jetsAK{}_{}".format(temp,mDark,decay,size,dist))
+        compare1D(hists,labels,"study_VRjets/scanEff_temp{}_mDark{}_decay_{}_{}_{}".format(temp,mDark,decay,jettype,dist))
         #if histname=="h_pf_ntracks": 
-        makeROC(hists,labels,"compare_jetsize/ROC_temp{}_mDark{}_decay_{}_jetsAK{}_{}".format(temp,mDark,decay,size,dist))
+        #makeROC(hists,labels,"study_VRjets/ROC_temp{}_mDark{}_decay_{}_jetsAK{}_{}".format(temp,mDark,decay,size,dist))
 
  
     return
@@ -287,7 +292,7 @@ sels = []
 sels.append("offline")
 
 dists=[]
-dists.append("suep_constit_pt")    
+#dists.append("suep_constit_pt")    
 dists.append("suep_dRscalar")     
 dists.append("suep_dRtruth") 
 dists.append("suep_eta")           
@@ -303,35 +308,43 @@ dists.append("suep_truth_ratio_nconstit")
 
 mMeds=[]
 #mMeds.append(125) 
-mMeds.append(400) 
+#mMeds.append(400) 
 mMeds.append(750) 
-mMeds.append(1000) 
+#mMeds.append(1000) 
 
 dists2D=[]
-dists2D.append("suep_scalar_Tmass"   )
-dists2D.append("suep_scalar_Rmass"   )
-dists2D.append("suep_scalar_Tpt"   )
-dists2D.append("suep_scalar_Rpt"   )
+#dists2D.append("suep_scalar_Tmass"   )
+#dists2D.append("suep_scalar_Rmass"   )
+#dists2D.append("suep_scalar_Tpt"   )
+#dists2D.append("suep_scalar_Rpt"   )
 dists2D.append("suep_truth_mass"    )
 dists2D.append("suep_truth_pt"      )
 dists2D.append("suep_truth_nconstit")
-dists2D.append("suep_dRtruth_ntrack")
-dists2D.append("suep_dRtruth_rationtrack")
+#dists2D.append("suep_dRtruth_ntrack")
+#dists2D.append("suep_dRtruth_rationtrack")
 
 
 
 
 for sel in sels: 
+    for dist in dists:
+
+        getFixedEff(sel,dist)
+        for mMed in mMeds:
+            #print(sel,dist,mMed)
+            compareJetType(mMed,2,2,"darkPhoHad",sel,dist)
+
+for sel in sels:
     for mMed in mMeds:
-        for dist in dists:
-            print(sel,dist,mMed)
-            compareJetSize(mMed,2,2,"darkPhoHad",sel,dist)
-        
+            if mMed==750:   
+                for dist in dists2D:
+            #    #    plot2D(mMed,2,2,"darkPhoHad",sel,"jetsAK20_" + dist)
+                    plot2D(mMed,2,2,"darkPhoHad",sel,"jetsVR500_" + dist)
+                    plot2D(mMed,2,2,"darkPhoHad",sel,"jetsVR1000_" + dist)
+                    plot2D(mMed,2,2,"darkPhoHad",sel,"jetsVR2000_" + dist)
 
         
-        if mMed==750:	
-            for dist in dists2D:
-            #    plot2D(mMed,2,2,"darkPhoHad",sel,"jetsAK20_" + dist)
-                plot2D(mMed,2,2,"darkPhoHad",sel,"jetsAK15_" + dist)
+        
 
-#getFixedEff()
+
+

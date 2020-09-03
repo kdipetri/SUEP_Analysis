@@ -15,15 +15,21 @@
 #include <TMatrixDSym.h>
 #include <TMatrixD.h>
 #include <TVectorD.h>
+#include <TColor.h>
 #include "Math/GenVector/Cartesian3D.h" 
 #include "Math/GenVector/PositionVector3D.h" 
 #include "Math/GenVector/DisplacementVector3D.h" 
 #include "SUEP_Analysis/PlotHelper.h"
 #include "SUEP_Analysis/PhysicsObjects.h"
+#include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/ClusterSequenceArea.hh"
+#include "fastjet/contrib/VariableRPlugin.hh"
 // Header file for the classes stored in the TTree if any.
 #include "vector"
+#include <iostream> // needed for fastjet contrib io
+#include <sstream>  // needed for fastjet contrib internal io
+//#include <vector> 
 
 PlotHelper plotter("");//set up the plotter
 TCanvas *c1 = new TCanvas("c1","c1",800,800);

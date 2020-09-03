@@ -2,6 +2,7 @@
 #include "SUEP_Analysis/doHistos.h"
 #include "SUEP_Analysis/PlotHelper.h"
 #include "Root/jetStudies.C"
+#include "Root/variableJets.C"
 #include "Root/eventDisplays.C"
 #include "Root/eventShapes.C"
 #include "Root/kinematics.C"
@@ -96,13 +97,19 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // * 
       // Find the higgs && pack up final state particles
       // * 
-      SUEP_Jet suep_jet;
+      SUEP_Jet suep_jet_all; // all status 1 particles
+      SUEP_Jet suep_jet_charge; // add charge
+      SUEP_Jet suep_jet_eta2p5; // add eta 2.5 2.5 
+      SUEP_Jet suep_jet; // pt 1 gev
       TLorentzVector suep_particle_p4;
       std::vector<SUEP_particle> suep_particles; suep_particles.clear();
       int ntruth=0;
       for (unsigned int i=0; i < GenParticles_PdgId->size(); i++)
       {
-        if (GenParticles_PdgId->at(i)==25) scalar = GenParticles->at(i);
+        if (GenParticles_PdgId->at(i)==25) {
+          //std::cout << GenParticles_Status->at(i) <<  " mass " << GenParticles->at(i).M()  << std::endl;
+          scalar = GenParticles->at(i);
+        }
 
         // pack up suep final state particles
         // Only works for dark pho (had) samples - electrons muons hadrons
@@ -119,15 +126,50 @@ void doHistos::Loop(std::string s_sample,bool isMC)
           suep_particle.charge = get_charge(GenParticles_PdgId->at(i));
           suep_particles.push_back(suep_particle);
 
-          if (suep_particle.pt1GeV && suep_particle.eta2p5 && suep_particle.charge==1) { // add reco requirement later...
-            suep_jet.p4+= suep_particle.p4;
-            suep_jet.nTruthTracks+=1;
+          // for truth studies
+          suep_jet_all.p4+=suep_particle.p4; 
+          suep_jet_all.nTruthTracks+=1;
+          if (suep_particle.charge==1) {
+            suep_jet_charge.p4+=suep_particle.p4; 
+            suep_jet_charge.nTruthTracks+=1;
+            if (suep_particle.eta2p5){
+              suep_jet_eta2p5.p4+=suep_particle.p4; 
+              suep_jet_eta2p5.nTruthTracks+=1;
+              if (suep_particle.pt1GeV){
+                suep_jet.p4+=suep_particle.p4; 
+                suep_jet.nTruthTracks+=1;               
+              }
+            }
           }
-
 
         }
       }
       //std::cout << "NTRUTH = " << ntruth << std::endl;
+        plotter.Plot1D(Form("%s_truthstudy_scalar_mass"   , s_sample.c_str()), ";mass [GeV]" , scalar.M()      , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_scalar_ntracks", s_sample.c_str()), ";n_tracks"   , -1              , 100, 0, 1000);
+        plotter.Plot1D(Form("%s_truthstudy_scalar_pt"     , s_sample.c_str()), ";p_{T} [GeV]", scalar.Pt()     , 100, 0, 2000);
+
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_all.p4.M()      , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_all.nTruthTracks, 100, 0, 1000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_all.p4.Pt()     , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_eta2p5.p4.M()      , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_eta2p5.nTruthTracks, 100, 0, 1000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_eta2p5.p4.Pt()     , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_mass"          , s_sample.c_str()), ";mass [GeV]" , suep_jet.p4.M()      , 100, 0, 2000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_ntracks"       , s_sample.c_str()), ";n_tracks"   , suep_jet.nTruthTracks, 100, 0, 1000);
+        plotter.Plot1D(Form("%s_truthstudy_suep_jet_pt"            , s_sample.c_str()), ";p_{T} [GeV]", suep_jet.p4.Pt()     , 100, 0, 2000);
+  
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks_scalar_eta"   , s_sample.c_str()), "" , scalar.Eta(), suep_jet_eta2p5.nTruthTracks  , 50, -5, 5, 50, 0, 1000);
+
+
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_all.p4.M()     , 50, 0, 2000, 50, 0, 2000);
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_eta2p5.p4.M()  , 50, 0, 2000, 50, 0, 2000);
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_mass"          , s_sample.c_str()), "" , scalar.M(), suep_jet.p4.M()         , 100, 0, 2000, 100, 0, 1000);
+  
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_all.p4.Pt()     , 50, 0, 2000, 50, 0, 2000);
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_eta2p5.p4.Pt()  , 50, 0, 2000, 50, 0, 2000);
+        plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_pt"          , s_sample.c_str()), "" , scalar.Pt(), suep_jet.p4.Pt()         , 50, 0, 2000, 50, 0, 2000);
+
       plotter.Plot1D(Form("%s_ntruth_final_state" ,s_sample.c_str()),";ntruth", ntruth, 100,0,500);
 
 
@@ -277,29 +319,34 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // Pass scouting or offline triggers
       // * 
 
-      if (ht > 500){// Scouting stream 
-
-        basic_kinematics(s_sample,"scouting");
-  
-        plotEventShapes(s_sample, "scouting", tracks);
-
-        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 2.0);
-        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.5);
-        fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
-
-
-      }
+      //if (ht > 500){// Scouting stream 
+      //
+      //  //basic_kinematics(s_sample,"scouting");
+      //
+      //  //plotEventShapes(s_sample, "scouting", tracks);
+      //
+      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 2.0);
+      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.5);
+      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
+      //
+      //
+      //}
       if (ht > 1200 || lead_jet_pt > 500) {
+
 
         basic_kinematics(s_sample,"offline");
   
         plotEventShapes(s_sample, "offline", tracks);
 
-        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
-        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
+        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
+        ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
         fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
-        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
-        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
+        ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
+        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
+
+        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2000); // param = rho
+        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1000); // param = rho
+        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 500); // param = rho
 
       }
       
