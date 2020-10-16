@@ -168,7 +168,7 @@ int main(int argc, char* argv[]){
     if (argc > 1){
         sample_name = argv[1];
         output_name = argv[1];
-        file_name = Form("root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP/SUEP_2018_%s_13TeV-pythia8_AnalysisTree.root",sample_name.c_str());
+        file_name = argv[2];
     }
 
     std::cout << "Starting SUEP Studies!" << std::endl;

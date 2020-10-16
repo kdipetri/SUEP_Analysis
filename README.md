@@ -15,7 +15,7 @@ chmod +x setup.sh
 ```
 * setup environment (every time):
 ```
-cd nobackup/SUEPs/CMSSW_10_6_13/src/SUEP_Analysis
+cd ~/nobackup/SUEPs/CMSSW_10_6_13/src/SUEP_Analysis
 cmsenv
 ```
 
@@ -42,12 +42,15 @@ python util/make_displays.py
 
 # Signal n-tuples live here
 ```
-eosls /store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP
+eosls /store/user/kdipetri/SUEP/Production_v0.1/2018/merged_NTUP
 ```
 * There are 12 signal points, and each sample has 10k events
 * There are three decay scenarios and 4 scalar masses
-* Let's focus on the "generic" decay scenario first
+* The "darkPho" and "darkPhoHad" scenarios have full truth information 
+* The "generic" decay scenarios don't have full truth info, but everything else is ok 
 - scalar pdgId = 25
 - dark meson pdgId = 999999
 - dark photon pdgId = 999998
 
+# QCD n-tuples live here
+eosls /store/user/kdipetri/SUEP/Production_v0.0/2018/merged_NTUP
