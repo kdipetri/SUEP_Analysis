@@ -18,13 +18,15 @@
 #include "TLegend.h"
 #include "TLegendEntry.h"
 #include "TGraph.h"
+#include "TGraph2D.h"
+#include "TMultiGraph.h"
 #include "TStyle.h"
 #include "TPaveStats.h"
 
 using namespace std;
 std::string plotdir = "Plots";
 
-
+std::vector<int> color = {kRed+1,kBlue+1,kOrange+1,kGreen+1,kMagenta+1,kYellow+1,kGray+1,kViolet+1};
 
 class PlotHelper {
  public:
@@ -37,7 +39,6 @@ class PlotHelper {
   };
 
   static void setPlotStyle() {
-      std::cout << "Using Karris Plot Style" << endl;
       TStyle* gStyle = new TStyle("gStyle","Karris Plot Style"); 
       
       gStyle->SetPalette(kBird);

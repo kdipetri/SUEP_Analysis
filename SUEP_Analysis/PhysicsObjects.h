@@ -11,6 +11,10 @@ struct Jet {
   bool id;
   int multiplicity;
   int chargedMultiplicity;
+  float isolation;
+  float scalar_dPhi;
+  float scalar_dR;
+  float min_dR;
 };
 
 struct JetAK8 {
@@ -27,6 +31,22 @@ struct Track {
   bool fromPV;
   bool highPurity;
   bool isPFcand;
+  bool isSuep;
+};
+
+struct SUEP_particle {
+  unsigned int index;
+  TLorentzVector p4;
+  int pdgId;
+  bool pt1GeV;
+  bool eta2p5;
+  bool isReco;
+  bool charge;
+};
+
+struct SUEP_Jet {// jet of all truth particle pt > 1 GeV eta, charge from suep
+  TLorentzVector p4;
+  int nTruthTracks=0;
 };
 
 #endif

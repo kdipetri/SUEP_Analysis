@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Thu Jun  4 14:00:06 2020 by ROOT version 6.12/06
+// Fri Oct 16 14:22:03 2020 by ROOT version 6.14/09
 // from TTree PreSelection/PreSelection
-// found on file: PrivateSamples.SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_n-100_95_RA2AnalysisTree.root
+// found on file: root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.2/2018/NTUP/PrivateSamples.SUEP_2018_mMed-1000_mDark-2_temp-2_decay-darkPhoHad_13TeV-pythia8_n-100_0_RA2AnalysisTree.root
 //////////////////////////////////////////////////////////
-
+//
 #ifndef doHistos_h
 #define doHistos_h
 
@@ -12,17 +12,36 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TLorentzVector.h>
+#include <TMatrixDSym.h>
+#include <TMatrixD.h>
+#include <TVectorD.h>
 #include "Math/GenVector/Cartesian3D.h" 
 #include "Math/GenVector/PositionVector3D.h" 
 #include "Math/GenVector/DisplacementVector3D.h" 
 #include "SUEP_Analysis/PlotHelper.h"
 #include "SUEP_Analysis/PhysicsObjects.h"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
+#include "fastjet/ClusterSequenceArea.hh"
+// not included in cmssw - needs extra setup
+//#include "fastjet/contrib/VariableRPlugin.hh"
+#include "Math/GenVector/PtEtaPhiE4D.h"
 
-// Header file for the classes stored in the TTree if any.
-#include "vector"
-
+// Setup plotter
 PlotHelper plotter("");//set up the plotter
 TCanvas *c1 = new TCanvas("c1","c1",800,800);
+
+// Helpful variables
+TLorentzVector scalar;
+int npfs=0;
+int npfs_09=0;
+int npfs_08=0;
+int npfs_07=0;
+int npfs_2=0;
+int njets=0;
+float ht=0;
+float lead_jet_pt=0;
+
 
 class doHistos {
 public :
@@ -30,6 +49,20 @@ public :
    Int_t           fCurrent; //!current Tree number in a TChain
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
+// may need to increase these
+// set to accomodate 1 TeV darkPhoHad signal 10k events
+   static constexpr Int_t kMaxElectrons = 20;
+   static constexpr Int_t kMaxGenJets = 80;
+   static constexpr Int_t kMaxGenJetsAK8 = 20;
+   static constexpr Int_t kMaxGenParticles = 7000;
+   static constexpr Int_t kMaxGenVertices = 300;
+   static constexpr Int_t kMaxJets = 100;
+   static constexpr Int_t kMaxJetsAK8 = 20;
+   static constexpr Int_t kMaxJetsAK8_subjets = 20;
+   static constexpr Int_t kMaxMuons = 20;
+   static constexpr Int_t kMaxPrimaryVertices = 150;
+   static constexpr Int_t kMaxTracks = 2500;
+   static constexpr Int_t kMaxTracks_referencePoint = 2500;
 
    // Declaration of leaf types
    UInt_t          RunNum;
@@ -53,24 +86,47 @@ public :
    Int_t           EcalDeadCellBoundaryEnergyFilter;
    Int_t           EcalDeadCellTriggerPrimitiveFilter;
    Int_t           eeBadScFilter;
-   std::vector<TLorentzVector> *Electrons;
-   std::vector<int>     *Electrons_charge;
-   std::vector<bool>    *Electrons_passIso;
+   Int_t           Electrons_;
+   Double_t        Electrons_fCoordinates_fPt[kMaxElectrons];   //[Electrons_]
+   Double_t        Electrons_fCoordinates_fEta[kMaxElectrons];   //[Electrons_]
+   Double_t        Electrons_fCoordinates_fPhi[kMaxElectrons];   //[Electrons_]
+   Double_t        Electrons_fCoordinates_fE[kMaxElectrons];   //[Electrons_]
+   vector<int>     *Electrons_charge;
+   vector<bool>    *Electrons_passIso;
    Double_t        fixedGridRhoFastjetAll;
    Double_t        GenHT;
-   std::vector<TLorentzVector> *GenJets;
-   std::vector<TLorentzVector> *GenJetsAK8;
-   std::vector<int>     *GenJetsAK8_multiplicity;
-   std::vector<double>  *GenJetsAK8_softDropMass;
+   Int_t           GenJets_;
+   Double_t        GenJets_fCoordinates_fPt[kMaxGenJets];   //[GenJets_]
+   Double_t        GenJets_fCoordinates_fEta[kMaxGenJets];   //[GenJets_]
+   Double_t        GenJets_fCoordinates_fPhi[kMaxGenJets];   //[GenJets_]
+   Double_t        GenJets_fCoordinates_fE[kMaxGenJets];   //[GenJets_]
+   Int_t           GenJetsAK8_;
+   Double_t        GenJetsAK8_fCoordinates_fPt[kMaxGenJetsAK8];   //[GenJetsAK8_]
+   Double_t        GenJetsAK8_fCoordinates_fEta[kMaxGenJetsAK8];   //[GenJetsAK8_]
+   Double_t        GenJetsAK8_fCoordinates_fPhi[kMaxGenJetsAK8];   //[GenJetsAK8_]
+   Double_t        GenJetsAK8_fCoordinates_fE[kMaxGenJetsAK8];   //[GenJetsAK8_]
+   vector<int>     *GenJetsAK8_multiplicity;
+   vector<double>  *GenJetsAK8_softDropMass;
    Double_t        GenMET;
    Double_t        GenMETPhi;
    Double_t        GenMHT;
    Double_t        GenMHTPhi;
-   std::vector<TLorentzVector> *GenParticles;
-   std::vector<int>     *GenParticles_ParentId;
-   std::vector<int>     *GenParticles_ParentIdx;
-   std::vector<int>     *GenParticles_PdgId;
-   std::vector<int>     *GenParticles_Status;
+   Int_t           GenParticles_;
+   Double_t        GenParticles_fCoordinates_fPt[kMaxGenParticles];   //[GenParticles_]
+   Double_t        GenParticles_fCoordinates_fEta[kMaxGenParticles];   //[GenParticles_]
+   Double_t        GenParticles_fCoordinates_fPhi[kMaxGenParticles];   //[GenParticles_]
+   Double_t        GenParticles_fCoordinates_fE[kMaxGenParticles];   //[GenParticles_]
+   vector<int>     *GenParticles_Charge;
+   vector<int>     *GenParticles_ParentId;
+   vector<int>     *GenParticles_ParentIdx;
+   vector<int>     *GenParticles_PdgId;
+   vector<int>     *GenParticles_Status;
+   vector<bool>    *GenParticles_TTFlag;
+   vector<int>     *GenParticles_vertexIdx;
+   Int_t           GenVertices_;
+   Double_t        GenVertices_fCoordinates_fX[kMaxGenVertices];   //[GenVertices_]
+   Double_t        GenVertices_fCoordinates_fY[kMaxGenVertices];   //[GenVertices_]
+   Double_t        GenVertices_fCoordinates_fZ[kMaxGenVertices];   //[GenVertices_]
    Int_t           globalSuperTightHalo2016Filter;
    Int_t           globalTightHalo2016Filter;
    Int_t           HBHEIsoNoiseFilter;
@@ -82,102 +138,119 @@ public :
    Int_t           isoPionTracks;
    Bool_t          JetID;
    Bool_t          JetIDAK8;
-   std::vector<TLorentzVector> *Jets;
-   std::vector<double>  *Jets_axismajor;
-   std::vector<double>  *Jets_axisminor;
-   std::vector<double>  *Jets_bDiscriminatorCSV;
-   std::vector<double>  *Jets_bJetTagDeepCSVBvsAll;
-   std::vector<double>  *Jets_chargedEmEnergyFraction;
-   std::vector<double>  *Jets_chargedHadronEnergyFraction;
-   std::vector<int>     *Jets_chargedHadronMultiplicity;
-   std::vector<int>     *Jets_chargedMultiplicity;
-   std::vector<double>  *Jets_electronEnergyFraction;
-   std::vector<int>     *Jets_electronMultiplicity;
-   std::vector<int>     *Jets_hadronFlavor;
-   std::vector<double>  *Jets_hfEMEnergyFraction;
-   std::vector<double>  *Jets_hfHadronEnergyFraction;
-   std::vector<bool>    *Jets_HTMask;
-   std::vector<bool>    *Jets_ID;
-   std::vector<double>  *Jets_jecFactor;
-   std::vector<double>  *Jets_jerFactor;
-   std::vector<bool>    *Jets_LeptonMask;
-   std::vector<bool>    *Jets_MHTMask;
-   std::vector<int>     *Jets_multiplicity;
-   std::vector<double>  *Jets_muonEnergyFraction;
-   std::vector<int>     *Jets_muonMultiplicity;
-   std::vector<double>  *Jets_neutralEmEnergyFraction;
-   std::vector<double>  *Jets_neutralHadronEnergyFraction;
-   std::vector<int>     *Jets_neutralHadronMultiplicity;
-   std::vector<int>     *Jets_neutralMultiplicity;
-   std::vector<int>     *Jets_partonFlavor;
-   std::vector<double>  *Jets_photonEnergyFraction;
-   std::vector<int>     *Jets_photonMultiplicity;
-   std::vector<double>  *Jets_ptD;
-   std::vector<double>  *Jets_qgLikelihood;
-   std::vector<TLorentzVector> *JetsAK8;
-   std::vector<double>  *JetsAK8_chargedEmEnergyFraction;
-   std::vector<double>  *JetsAK8_chargedHadronEnergyFraction;
-   std::vector<int>     *JetsAK8_chargedHadronMultiplicity;
-   std::vector<int>     *JetsAK8_chargedMultiplicity;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagbbvsLight;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagHbbvsQCD;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagTvsQCD;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagWvsQCD;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagZbbvsQCD;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagZHbbvsQCD;
-   std::vector<double>  *JetsAK8_DeepMassDecorrelTagZvsQCD;
-   std::vector<double>  *JetsAK8_DeepTagHbbvsQCD;
-   std::vector<double>  *JetsAK8_DeepTagTvsQCD;
-   std::vector<double>  *JetsAK8_DeepTagWvsQCD;
-   std::vector<double>  *JetsAK8_DeepTagZbbvsQCD;
-   std::vector<double>  *JetsAK8_DeepTagZvsQCD;
-   std::vector<double>  *JetsAK8_doubleBDiscriminator;
-   std::vector<double>  *JetsAK8_ecfN2b1;
-   std::vector<double>  *JetsAK8_ecfN2b2;
-   std::vector<double>  *JetsAK8_ecfN3b1;
-   std::vector<double>  *JetsAK8_ecfN3b2;
-   std::vector<double>  *JetsAK8_electronEnergyFraction;
-   std::vector<int>     *JetsAK8_electronMultiplicity;
-   std::vector<double>  *JetsAK8_hfEMEnergyFraction;
-   std::vector<double>  *JetsAK8_hfHadronEnergyFraction;
-   std::vector<bool>    *JetsAK8_ID;
-   std::vector<double>  *JetsAK8_jecFactor;
-   std::vector<double>  *JetsAK8_jerFactor;
-   std::vector<double>  *JetsAK8_muonEnergyFraction;
-   std::vector<int>     *JetsAK8_muonMultiplicity;
-   std::vector<double>  *JetsAK8_neutralEmEnergyFraction;
-   std::vector<double>  *JetsAK8_neutralHadronEnergyFraction;
-   std::vector<double>  *JetsAK8_neutralHadronMultiplicity;
-   std::vector<double>  *JetsAK8_neutralMultiplicity;
-   std::vector<double>  *JetsAK8_NsubjettinessTau1;
-   std::vector<double>  *JetsAK8_NsubjettinessTau2;
-   std::vector<double>  *JetsAK8_NsubjettinessTau3;
-   std::vector<int>     *JetsAK8_NumBhadrons;
-   std::vector<int>     *JetsAK8_NumChadrons;
-   std::vector<double>  *JetsAK8_pfMassIndependentDeepDoubleBvLJetTagsProbHbb;
-   std::vector<double>  *JetsAK8_photonEnergyFraction;
-   std::vector<double>  *JetsAK8_photonMultiplicity;
-   std::vector<double>  *JetsAK8_softDropMass;
-   std::vector<std::vector<TLorentzVector> > *JetsAK8_subjets;
-   std::vector<std::vector<double> > *JetsAK8_subjets_axismajor;
-   std::vector<std::vector<double> > *JetsAK8_subjets_axisminor;
-   std::vector<std::vector<double> > *JetsAK8_subjets_bDiscriminatorCSV;
-   std::vector<std::vector<double> > *JetsAK8_subjets_jecFactor;
-   std::vector<std::vector<int> > *JetsAK8_subjets_multiplicity;
-   std::vector<std::vector<double> > *JetsAK8_subjets_ptD;
+   Int_t           Jets_;
+   Double_t        Jets_fCoordinates_fPt[kMaxJets];   //[Jets_]
+   Double_t        Jets_fCoordinates_fEta[kMaxJets];   //[Jets_]
+   Double_t        Jets_fCoordinates_fPhi[kMaxJets];   //[Jets_]
+   Double_t        Jets_fCoordinates_fE[kMaxJets];   //[Jets_]
+   vector<double>  *Jets_axismajor;
+   vector<double>  *Jets_axisminor;
+   vector<double>  *Jets_bDiscriminatorCSV;
+   vector<double>  *Jets_bJetTagDeepCSVBvsAll;
+   vector<double>  *Jets_chargedEmEnergyFraction;
+   vector<double>  *Jets_chargedHadronEnergyFraction;
+   vector<int>     *Jets_chargedHadronMultiplicity;
+   vector<int>     *Jets_chargedMultiplicity;
+   vector<double>  *Jets_electronEnergyFraction;
+   vector<int>     *Jets_electronMultiplicity;
+   vector<int>     *Jets_hadronFlavor;
+   vector<double>  *Jets_hfEMEnergyFraction;
+   vector<double>  *Jets_hfHadronEnergyFraction;
+   vector<bool>    *Jets_HTMask;
+   vector<bool>    *Jets_ID;
+   vector<double>  *Jets_jecFactor;
+   vector<double>  *Jets_jerFactor;
+   vector<bool>    *Jets_LeptonMask;
+   vector<bool>    *Jets_MHTMask;
+   vector<int>     *Jets_multiplicity;
+   vector<double>  *Jets_muonEnergyFraction;
+   vector<int>     *Jets_muonMultiplicity;
+   vector<double>  *Jets_neutralEmEnergyFraction;
+   vector<double>  *Jets_neutralHadronEnergyFraction;
+   vector<int>     *Jets_neutralHadronMultiplicity;
+   vector<int>     *Jets_neutralMultiplicity;
+   vector<int>     *Jets_partonFlavor;
+   vector<double>  *Jets_photonEnergyFraction;
+   vector<int>     *Jets_photonMultiplicity;
+   vector<double>  *Jets_ptD;
+   vector<double>  *Jets_qgLikelihood;
+   Int_t           JetsAK8_;
+   Double_t        JetsAK8_fCoordinates_fPt[kMaxJetsAK8];   //[JetsAK8_]
+   Double_t        JetsAK8_fCoordinates_fEta[kMaxJetsAK8];   //[JetsAK8_]
+   Double_t        JetsAK8_fCoordinates_fPhi[kMaxJetsAK8];   //[JetsAK8_]
+   Double_t        JetsAK8_fCoordinates_fE[kMaxJetsAK8];   //[JetsAK8_]
+   vector<double>  *JetsAK8_chargedEmEnergyFraction;
+   vector<double>  *JetsAK8_chargedHadronEnergyFraction;
+   vector<int>     *JetsAK8_chargedHadronMultiplicity;
+   vector<int>     *JetsAK8_chargedMultiplicity;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagbbvsLight;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagHbbvsQCD;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagTvsQCD;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagWvsQCD;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagZbbvsQCD;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagZHbbvsQCD;
+   vector<double>  *JetsAK8_DeepMassDecorrelTagZvsQCD;
+   vector<double>  *JetsAK8_DeepTagHbbvsQCD;
+   vector<double>  *JetsAK8_DeepTagTvsQCD;
+   vector<double>  *JetsAK8_DeepTagWvsQCD;
+   vector<double>  *JetsAK8_DeepTagZbbvsQCD;
+   vector<double>  *JetsAK8_DeepTagZvsQCD;
+   vector<double>  *JetsAK8_doubleBDiscriminator;
+   vector<double>  *JetsAK8_ecfN2b1;
+   vector<double>  *JetsAK8_ecfN2b2;
+   vector<double>  *JetsAK8_ecfN3b1;
+   vector<double>  *JetsAK8_ecfN3b2;
+   vector<double>  *JetsAK8_electronEnergyFraction;
+   vector<int>     *JetsAK8_electronMultiplicity;
+   vector<double>  *JetsAK8_hfEMEnergyFraction;
+   vector<double>  *JetsAK8_hfHadronEnergyFraction;
+   vector<bool>    *JetsAK8_ID;
+   vector<double>  *JetsAK8_jecFactor;
+   vector<double>  *JetsAK8_jerFactor;
+   vector<double>  *JetsAK8_muonEnergyFraction;
+   vector<int>     *JetsAK8_muonMultiplicity;
+   vector<double>  *JetsAK8_neutralEmEnergyFraction;
+   vector<double>  *JetsAK8_neutralHadronEnergyFraction;
+   vector<double>  *JetsAK8_neutralHadronMultiplicity;
+   vector<double>  *JetsAK8_neutralMultiplicity;
+   vector<double>  *JetsAK8_NsubjettinessTau1;
+   vector<double>  *JetsAK8_NsubjettinessTau2;
+   vector<double>  *JetsAK8_NsubjettinessTau3;
+   vector<int>     *JetsAK8_NumBhadrons;
+   vector<int>     *JetsAK8_NumChadrons;
+   vector<double>  *JetsAK8_pfMassIndependentDeepDoubleBvLJetTagsProbHbb;
+   vector<double>  *JetsAK8_photonEnergyFraction;
+   vector<double>  *JetsAK8_photonMultiplicity;
+   vector<double>  *JetsAK8_softDropMass;
+   Int_t           JetsAK8_subjets_;
+   Double_t        JetsAK8_subjets_fCoordinates_fPt[kMaxJetsAK8_subjets];   //[JetsAK8_subjets_]
+   Double_t        JetsAK8_subjets_fCoordinates_fEta[kMaxJetsAK8_subjets];   //[JetsAK8_subjets_]
+   Double_t        JetsAK8_subjets_fCoordinates_fPhi[kMaxJetsAK8_subjets];   //[JetsAK8_subjets_]
+   Double_t        JetsAK8_subjets_fCoordinates_fE[kMaxJetsAK8_subjets];   //[JetsAK8_subjets_]
+   vector<int>     *JetsAK8_subjetsCounts;
+   vector<double>  *JetsAK8_subjets_axismajor;
+   vector<double>  *JetsAK8_subjets_axisminor;
+   vector<double>  *JetsAK8_subjets_bDiscriminatorCSV;
+   vector<double>  *JetsAK8_subjets_jecFactor;
+   vector<int>     *JetsAK8_subjets_multiplicity;
+   vector<double>  *JetsAK8_subjets_ptD;
    Double_t        madHT;
    Double_t        MET;
-   std::vector<double>  *METDown;
+   vector<double>  *METDown;
    Double_t        METPhi;
-   std::vector<double>  *METPhiDown;
-   std::vector<double>  *METPhiUp;
+   vector<double>  *METPhiDown;
+   vector<double>  *METPhiUp;
    Double_t        METSignificance;
-   std::vector<double>  *METUp;
+   vector<double>  *METUp;
    Double_t        MHT;
    Double_t        MHTPhi;
-   std::vector<TLorentzVector> *Muons;
-   std::vector<int>     *Muons_charge;
-   std::vector<bool>    *Muons_passIso;
+   Int_t           Muons_;
+   Double_t        Muons_fCoordinates_fPt[kMaxMuons];   //[Muons_]
+   Double_t        Muons_fCoordinates_fEta[kMaxMuons];   //[Muons_]
+   Double_t        Muons_fCoordinates_fPhi[kMaxMuons];   //[Muons_]
+   Double_t        Muons_fCoordinates_fE[kMaxMuons];   //[Muons_]
+   vector<int>     *Muons_charge;
+   vector<bool>    *Muons_passIso;
    Int_t           nAllVertices;
    Int_t           NElectrons;
    Int_t           NJets;
@@ -186,59 +259,69 @@ public :
    Double_t        NumEvents;
    Int_t           NumInteractions;
    Int_t           NVtx;
-   std::vector<float>   *PDFweights;
+   vector<float>   *PDFweights;
    Double_t        PFCaloMETRatio;
    Int_t           PrimaryVertexFilter;
-   std::vector<double>  *PrimaryVertices_chi2;
-   std::vector<bool>    *PrimaryVertices_isFake;
-   std::vector<bool>    *PrimaryVertices_isGood;
-   std::vector<bool>    *PrimaryVertices_isValid;
-   std::vector<double>  *PrimaryVertices_ndof;
-   std::vector<int>     *PrimaryVertices_nTracks;
-   std::vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > *PrimaryVertices_position;
-   std::vector<double>  *PrimaryVertices_tError;
-   std::vector<double>  *PrimaryVertices_time;
-   std::vector<double>  *PrimaryVertices_xError;
-   std::vector<double>  *PrimaryVertices_yError;
-   std::vector<double>  *PrimaryVertices_zError;
-   std::vector<float>   *PSweights;
+   Int_t           PrimaryVertices_;
+   Double_t        PrimaryVertices_fCoordinates_fX[kMaxPrimaryVertices];   //[PrimaryVertices_]
+   Double_t        PrimaryVertices_fCoordinates_fY[kMaxPrimaryVertices];   //[PrimaryVertices_]
+   Double_t        PrimaryVertices_fCoordinates_fZ[kMaxPrimaryVertices];   //[PrimaryVertices_]
+   vector<double>  *PrimaryVertices_chi2;
+   vector<bool>    *PrimaryVertices_isFake;
+   vector<bool>    *PrimaryVertices_isGood;
+   vector<bool>    *PrimaryVertices_isValid;
+   vector<double>  *PrimaryVertices_ndof;
+   vector<int>     *PrimaryVertices_nTracks;
+   vector<double>  *PrimaryVertices_sumTrackPt2;
+   vector<double>  *PrimaryVertices_tError;
+   vector<double>  *PrimaryVertices_time;
+   vector<double>  *PrimaryVertices_xError;
+   vector<double>  *PrimaryVertices_yError;
+   vector<double>  *PrimaryVertices_zError;
+   vector<float>   *PSweights;
    Double_t        puSysDown;
    Double_t        puSysUp;
    Double_t        puWeight;
-   std::vector<float>   *ScaleWeights;
-   std::vector<double>  *SignalParameters;
-   Double_t        SusyLSPMass;
-   Double_t        SusyMotherMass;
-   std::vector<ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > *Tracks;
-   std::vector<int>     *Tracks_charge;
-   std::vector<double>  *Tracks_dxyErrorPV0;
-   std::vector<double>  *Tracks_dxyPV0;
-   std::vector<double>  *Tracks_dzAssociatedPV;
-   std::vector<double>  *Tracks_dzErrorPV0;
-   std::vector<double>  *Tracks_dzPV0;
-   std::vector<double>  *Tracks_etaError;
-   std::vector<int>     *Tracks_firstHit;
-   std::vector<int>     *Tracks_foundHits;
-   std::vector<int>     *Tracks_fromPV0;
-   std::vector<std::vector<int> > *Tracks_hitPattern;
-   std::vector<double>  *Tracks_IP2DPV0;
-   std::vector<double>  *Tracks_IP2dSigPV0;
-   std::vector<double>  *Tracks_IP3DPV0;
-   std::vector<double>  *Tracks_IP3DSigPV0;
-   std::vector<int>     *Tracks_lostHits;
-   std::vector<bool>    *Tracks_matchedToPFCandidate;
-   std::vector<double>  *Tracks_normalizedChi2;
-   std::vector<int>     *Tracks_numberOfHits;
-   std::vector<int>     *Tracks_numberOfPixelHits;
-   std::vector<double>  *Tracks_phiError;
-   std::vector<double>  *Tracks_ptError;
-   std::vector<int>     *Tracks_pvAssociationQuality;
-   std::vector<double>  *Tracks_qoverpError;
-   std::vector<int>     *Tracks_quality;
-   std::vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > *Tracks_referencePoint;
-   std::vector<int>     *TriggerPass;
-   std::vector<int>     *TriggerPrescales;
-   std::vector<int>     *TriggerVersion;
+   vector<float>   *ScaleWeights;
+   vector<double>  *SignalParameters;
+   Int_t           Tracks_;
+   Double_t        Tracks_fCoordinates_fX[kMaxTracks];   //[Tracks_]
+   Double_t        Tracks_fCoordinates_fY[kMaxTracks];   //[Tracks_]
+   Double_t        Tracks_fCoordinates_fZ[kMaxTracks];   //[Tracks_]
+   vector<int>     *Tracks_charge;
+   vector<double>  *Tracks_dxyErrorPV0;
+   vector<double>  *Tracks_dxyPV0;
+   vector<double>  *Tracks_dzAssociatedPV;
+   vector<double>  *Tracks_dzErrorPV0;
+   vector<double>  *Tracks_dzPV0;
+   vector<double>  *Tracks_etaError;
+   vector<int>     *Tracks_firstHit;
+   vector<int>     *Tracks_foundHits;
+   vector<int>     *Tracks_fromPV0;
+   vector<int>     *Tracks_hitPattern;
+   vector<int>     *Tracks_hitPatternCounts;
+   vector<double>  *Tracks_IP2DPV0;
+   vector<double>  *Tracks_IP2dSigPV0;
+   vector<double>  *Tracks_IP3DPV0;
+   vector<double>  *Tracks_IP3DSigPV0;
+   vector<int>     *Tracks_lostHits;
+   vector<bool>    *Tracks_matchedToPFCandidate;
+   vector<double>  *Tracks_normalizedChi2;
+   vector<int>     *Tracks_numberOfHits;
+   vector<int>     *Tracks_numberOfPixelHits;
+   vector<double>  *Tracks_phiError;
+   vector<double>  *Tracks_ptError;
+   vector<int>     *Tracks_pvAssociationQuality;
+   vector<double>  *Tracks_qoverpError;
+   vector<int>     *Tracks_quality;
+   Int_t           Tracks_referencePoint_;
+   Double_t        Tracks_referencePoint_fCoordinates_fX[kMaxTracks_referencePoint];   //[Tracks_referencePoint_]
+   Double_t        Tracks_referencePoint_fCoordinates_fY[kMaxTracks_referencePoint];   //[Tracks_referencePoint_]
+   Double_t        Tracks_referencePoint_fCoordinates_fZ[kMaxTracks_referencePoint];   //[Tracks_referencePoint_]
+   vector<int>     *Tracks_vertexIdx;
+   vector<int>     *TriggerPass;
+   vector<int>     *TriggerPrescales;
+   vector<int>     *TriggerVersion;
    Double_t        TrueNumInteractions;
    Double_t        Weight;
 
@@ -264,24 +347,47 @@ public :
    TBranch        *b_EcalDeadCellBoundaryEnergyFilter;   //!
    TBranch        *b_EcalDeadCellTriggerPrimitiveFilter;   //!
    TBranch        *b_eeBadScFilter;   //!
-   TBranch        *b_Electrons;   //!
+   TBranch        *b_Electrons_;   //!
+   TBranch        *b_Electrons_fCoordinates_fPt;   //!
+   TBranch        *b_Electrons_fCoordinates_fEta;   //!
+   TBranch        *b_Electrons_fCoordinates_fPhi;   //!
+   TBranch        *b_Electrons_fCoordinates_fE;   //!
    TBranch        *b_Electrons_charge;   //!
    TBranch        *b_Electrons_passIso;   //!
    TBranch        *b_fixedGridRhoFastjetAll;   //!
    TBranch        *b_GenHT;   //!
-   TBranch        *b_GenJets;   //!
-   TBranch        *b_GenJetsAK8;   //!
+   TBranch        *b_GenJets_;   //!
+   TBranch        *b_GenJets_fCoordinates_fPt;   //!
+   TBranch        *b_GenJets_fCoordinates_fEta;   //!
+   TBranch        *b_GenJets_fCoordinates_fPhi;   //!
+   TBranch        *b_GenJets_fCoordinates_fE;   //!
+   TBranch        *b_GenJetsAK8_;   //!
+   TBranch        *b_GenJetsAK8_fCoordinates_fPt;   //!
+   TBranch        *b_GenJetsAK8_fCoordinates_fEta;   //!
+   TBranch        *b_GenJetsAK8_fCoordinates_fPhi;   //!
+   TBranch        *b_GenJetsAK8_fCoordinates_fE;   //!
    TBranch        *b_GenJetsAK8_multiplicity;   //!
    TBranch        *b_GenJetsAK8_softDropMass;   //!
    TBranch        *b_GenMET;   //!
    TBranch        *b_GenMETPhi;   //!
    TBranch        *b_GenMHT;   //!
    TBranch        *b_GenMHTPhi;   //!
-   TBranch        *b_GenParticles;   //!
+   TBranch        *b_GenParticles_;   //!
+   TBranch        *b_GenParticles_fCoordinates_fPt;   //!
+   TBranch        *b_GenParticles_fCoordinates_fEta;   //!
+   TBranch        *b_GenParticles_fCoordinates_fPhi;   //!
+   TBranch        *b_GenParticles_fCoordinates_fE;   //!
+   TBranch        *b_GenParticles_Charge;   //!
    TBranch        *b_GenParticles_ParentId;   //!
    TBranch        *b_GenParticles_ParentIdx;   //!
    TBranch        *b_GenParticles_PdgId;   //!
    TBranch        *b_GenParticles_Status;   //!
+   TBranch        *b_GenParticles_TTFlag;   //!
+   TBranch        *b_GenParticles_vertexIdx;   //!
+   TBranch        *b_GenVertices_;   //!
+   TBranch        *b_GenVertices_fCoordinates_fX;   //!
+   TBranch        *b_GenVertices_fCoordinates_fY;   //!
+   TBranch        *b_GenVertices_fCoordinates_fZ;   //!
    TBranch        *b_globalSuperTightHalo2016Filter;   //!
    TBranch        *b_globalTightHalo2016Filter;   //!
    TBranch        *b_HBHEIsoNoiseFilter;   //!
@@ -293,7 +399,11 @@ public :
    TBranch        *b_isoPionTracks;   //!
    TBranch        *b_JetID;   //!
    TBranch        *b_JetIDAK8;   //!
-   TBranch        *b_Jets;   //!
+   TBranch        *b_Jets_;   //!
+   TBranch        *b_Jets_fCoordinates_fPt;   //!
+   TBranch        *b_Jets_fCoordinates_fEta;   //!
+   TBranch        *b_Jets_fCoordinates_fPhi;   //!
+   TBranch        *b_Jets_fCoordinates_fE;   //!
    TBranch        *b_Jets_axismajor;   //!
    TBranch        *b_Jets_axisminor;   //!
    TBranch        *b_Jets_bDiscriminatorCSV;   //!
@@ -325,7 +435,11 @@ public :
    TBranch        *b_Jets_photonMultiplicity;   //!
    TBranch        *b_Jets_ptD;   //!
    TBranch        *b_Jets_qgLikelihood;   //!
-   TBranch        *b_JetsAK8;   //!
+   TBranch        *b_JetsAK8_;   //!
+   TBranch        *b_JetsAK8_fCoordinates_fPt;   //!
+   TBranch        *b_JetsAK8_fCoordinates_fEta;   //!
+   TBranch        *b_JetsAK8_fCoordinates_fPhi;   //!
+   TBranch        *b_JetsAK8_fCoordinates_fE;   //!
    TBranch        *b_JetsAK8_chargedEmEnergyFraction;   //!
    TBranch        *b_JetsAK8_chargedHadronEnergyFraction;   //!
    TBranch        *b_JetsAK8_chargedHadronMultiplicity;   //!
@@ -369,7 +483,12 @@ public :
    TBranch        *b_JetsAK8_photonEnergyFraction;   //!
    TBranch        *b_JetsAK8_photonMultiplicity;   //!
    TBranch        *b_JetsAK8_softDropMass;   //!
-   TBranch        *b_JetsAK8_subjets;   //!
+   TBranch        *b_JetsAK8_subjets_;   //!
+   TBranch        *b_JetsAK8_subjets_fCoordinates_fPt;   //!
+   TBranch        *b_JetsAK8_subjets_fCoordinates_fEta;   //!
+   TBranch        *b_JetsAK8_subjets_fCoordinates_fPhi;   //!
+   TBranch        *b_JetsAK8_subjets_fCoordinates_fE;   //!
+   TBranch        *b_JetsAK8_subjetsCounts;   //!
    TBranch        *b_JetsAK8_subjets_axismajor;   //!
    TBranch        *b_JetsAK8_subjets_axisminor;   //!
    TBranch        *b_JetsAK8_subjets_bDiscriminatorCSV;   //!
@@ -386,7 +505,11 @@ public :
    TBranch        *b_METUp;   //!
    TBranch        *b_MHT;   //!
    TBranch        *b_MHTPhi;   //!
-   TBranch        *b_Muons;   //!
+   TBranch        *b_Muons_;   //!
+   TBranch        *b_Muons_fCoordinates_fPt;   //!
+   TBranch        *b_Muons_fCoordinates_fEta;   //!
+   TBranch        *b_Muons_fCoordinates_fPhi;   //!
+   TBranch        *b_Muons_fCoordinates_fE;   //!
    TBranch        *b_Muons_charge;   //!
    TBranch        *b_Muons_passIso;   //!
    TBranch        *b_nAllVertices;   //!
@@ -400,13 +523,17 @@ public :
    TBranch        *b_PDFweights;   //!
    TBranch        *b_PFCaloMETRatio;   //!
    TBranch        *b_PrimaryVertexFilter;   //!
+   TBranch        *b_PrimaryVertices_;   //!
+   TBranch        *b_PrimaryVertices_fCoordinates_fX;   //!
+   TBranch        *b_PrimaryVertices_fCoordinates_fY;   //!
+   TBranch        *b_PrimaryVertices_fCoordinates_fZ;   //!
    TBranch        *b_PrimaryVertices_chi2;   //!
    TBranch        *b_PrimaryVertices_isFake;   //!
    TBranch        *b_PrimaryVertices_isGood;   //!
    TBranch        *b_PrimaryVertices_isValid;   //!
    TBranch        *b_PrimaryVertices_ndof;   //!
    TBranch        *b_PrimaryVertices_nTracks;   //!
-   TBranch        *b_PrimaryVertices_position;   //!
+   TBranch        *b_PrimaryVertices_sumTrackPt2;   //!
    TBranch        *b_PrimaryVertices_tError;   //!
    TBranch        *b_PrimaryVertices_time;   //!
    TBranch        *b_PrimaryVertices_xError;   //!
@@ -418,9 +545,10 @@ public :
    TBranch        *b_puWeight;   //!
    TBranch        *b_ScaleWeights;   //!
    TBranch        *b_SignalParameters;   //!
-   TBranch        *b_SusyLSPMass;   //!
-   TBranch        *b_SusyMotherMass;   //!
-   TBranch        *b_Tracks;   //!
+   TBranch        *b_Tracks_;   //!
+   TBranch        *b_Tracks_fCoordinates_fX;   //!
+   TBranch        *b_Tracks_fCoordinates_fY;   //!
+   TBranch        *b_Tracks_fCoordinates_fZ;   //!
    TBranch        *b_Tracks_charge;   //!
    TBranch        *b_Tracks_dxyErrorPV0;   //!
    TBranch        *b_Tracks_dxyPV0;   //!
@@ -432,6 +560,7 @@ public :
    TBranch        *b_Tracks_foundHits;   //!
    TBranch        *b_Tracks_fromPV0;   //!
    TBranch        *b_Tracks_hitPattern;   //!
+   TBranch        *b_Tracks_hitPatternCounts;   //!
    TBranch        *b_Tracks_IP2DPV0;   //!
    TBranch        *b_Tracks_IP2dSigPV0;   //!
    TBranch        *b_Tracks_IP3DPV0;   //!
@@ -446,7 +575,11 @@ public :
    TBranch        *b_Tracks_pvAssociationQuality;   //!
    TBranch        *b_Tracks_qoverpError;   //!
    TBranch        *b_Tracks_quality;   //!
-   TBranch        *b_Tracks_referencePoint;   //!
+   TBranch        *b_Tracks_referencePoint_;   //!
+   TBranch        *b_Tracks_referencePoint_fCoordinates_fX;   //!
+   TBranch        *b_Tracks_referencePoint_fCoordinates_fY;   //!
+   TBranch        *b_Tracks_referencePoint_fCoordinates_fZ;   //!
+   TBranch        *b_Tracks_vertexIdx;   //!
    TBranch        *b_TriggerPass;   //!
    TBranch        *b_TriggerPrescales;   //!
    TBranch        *b_TriggerVersion;   //!
@@ -472,11 +605,11 @@ doHistos::doHistos(TTree *tree, bool isMC) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("PrivateSamples.SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_n-100_95_RA2AnalysisTree.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.2/2018/NTUP/PrivateSamples.SUEP_2018_mMed-1000_mDark-2_temp-2_decay-darkPhoHad_13TeV-pythia8_n-100_0_RA2AnalysisTree.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("PrivateSamples.SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_n-100_95_RA2AnalysisTree.root");
+         f = new TFile("root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.2/2018/NTUP/PrivateSamples.SUEP_2018_mMed-1000_mDark-2_temp-2_decay-darkPhoHad_13TeV-pythia8_n-100_0_RA2AnalysisTree.root");
       }
-      TDirectory * dir = (TDirectory*)f->Get("PrivateSamples.SUEP_2018_mMed-750_mDark-2_temp-2_decay-generic_13TeV-pythia8_n-100_95_RA2AnalysisTree.root:/TreeMaker2");
+      TDirectory * dir = (TDirectory*)f->Get("root://cmseos.fnal.gov//store/user/kdipetri/SUEP/Production_v0.2/2018/NTUP/PrivateSamples.SUEP_2018_mMed-1000_mDark-2_temp-2_decay-darkPhoHad_13TeV-pythia8_n-100_0_RA2AnalysisTree.root:/TreeMaker2");
       dir->GetObject("PreSelection",tree);
 
    }
@@ -519,19 +652,17 @@ void doHistos::Init(TTree *tree)
    // (once per file to be processed).
 
    // Set object pointer
-   Electrons = 0;
    Electrons_charge = 0;
    Electrons_passIso = 0;
-   GenJets = 0;
-   GenJetsAK8 = 0;
    GenJetsAK8_multiplicity = 0;
    GenJetsAK8_softDropMass = 0;
-   GenParticles = 0;
+   GenParticles_Charge = 0;
    GenParticles_ParentId = 0;
    GenParticles_ParentIdx = 0;
    GenParticles_PdgId = 0;
    GenParticles_Status = 0;
-   Jets = 0;
+   GenParticles_TTFlag = 0;
+   GenParticles_vertexIdx = 0;
    Jets_axismajor = 0;
    Jets_axisminor = 0;
    Jets_bDiscriminatorCSV = 0;
@@ -563,7 +694,6 @@ void doHistos::Init(TTree *tree)
    Jets_photonMultiplicity = 0;
    Jets_ptD = 0;
    Jets_qgLikelihood = 0;
-   JetsAK8 = 0;
    JetsAK8_chargedEmEnergyFraction = 0;
    JetsAK8_chargedHadronEnergyFraction = 0;
    JetsAK8_chargedHadronMultiplicity = 0;
@@ -607,7 +737,7 @@ void doHistos::Init(TTree *tree)
    JetsAK8_photonEnergyFraction = 0;
    JetsAK8_photonMultiplicity = 0;
    JetsAK8_softDropMass = 0;
-   JetsAK8_subjets = 0;
+   JetsAK8_subjetsCounts = 0;
    JetsAK8_subjets_axismajor = 0;
    JetsAK8_subjets_axisminor = 0;
    JetsAK8_subjets_bDiscriminatorCSV = 0;
@@ -618,7 +748,6 @@ void doHistos::Init(TTree *tree)
    METPhiDown = 0;
    METPhiUp = 0;
    METUp = 0;
-   Muons = 0;
    Muons_charge = 0;
    Muons_passIso = 0;
    PDFweights = 0;
@@ -628,7 +757,7 @@ void doHistos::Init(TTree *tree)
    PrimaryVertices_isValid = 0;
    PrimaryVertices_ndof = 0;
    PrimaryVertices_nTracks = 0;
-   PrimaryVertices_position = 0;
+   PrimaryVertices_sumTrackPt2 = 0;
    PrimaryVertices_tError = 0;
    PrimaryVertices_time = 0;
    PrimaryVertices_xError = 0;
@@ -637,7 +766,6 @@ void doHistos::Init(TTree *tree)
    PSweights = 0;
    ScaleWeights = 0;
    SignalParameters = 0;
-   Tracks = 0;
    Tracks_charge = 0;
    Tracks_dxyErrorPV0 = 0;
    Tracks_dxyPV0 = 0;
@@ -649,6 +777,7 @@ void doHistos::Init(TTree *tree)
    Tracks_foundHits = 0;
    Tracks_fromPV0 = 0;
    Tracks_hitPattern = 0;
+   Tracks_hitPatternCounts = 0;
    Tracks_IP2DPV0 = 0;
    Tracks_IP2dSigPV0 = 0;
    Tracks_IP3DPV0 = 0;
@@ -663,7 +792,7 @@ void doHistos::Init(TTree *tree)
    Tracks_pvAssociationQuality = 0;
    Tracks_qoverpError = 0;
    Tracks_quality = 0;
-   Tracks_referencePoint = 0;
+   Tracks_vertexIdx = 0;
    TriggerPass = 0;
    TriggerPrescales = 0;
    TriggerVersion = 0;
@@ -694,24 +823,47 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("EcalDeadCellBoundaryEnergyFilter", &EcalDeadCellBoundaryEnergyFilter, &b_EcalDeadCellBoundaryEnergyFilter);
    fChain->SetBranchAddress("EcalDeadCellTriggerPrimitiveFilter", &EcalDeadCellTriggerPrimitiveFilter, &b_EcalDeadCellTriggerPrimitiveFilter);
    fChain->SetBranchAddress("eeBadScFilter", &eeBadScFilter, &b_eeBadScFilter);
-   fChain->SetBranchAddress("Electrons", &Electrons, &b_Electrons);
+   fChain->SetBranchAddress("Electrons", &Electrons_, &b_Electrons_);
+   fChain->SetBranchAddress("Electrons.fCoordinates.fPt", Electrons_fCoordinates_fPt, &b_Electrons_fCoordinates_fPt);
+   fChain->SetBranchAddress("Electrons.fCoordinates.fEta", Electrons_fCoordinates_fEta, &b_Electrons_fCoordinates_fEta);
+   fChain->SetBranchAddress("Electrons.fCoordinates.fPhi", Electrons_fCoordinates_fPhi, &b_Electrons_fCoordinates_fPhi);
+   fChain->SetBranchAddress("Electrons.fCoordinates.fE", Electrons_fCoordinates_fE, &b_Electrons_fCoordinates_fE);
    fChain->SetBranchAddress("Electrons_charge", &Electrons_charge, &b_Electrons_charge);
    fChain->SetBranchAddress("Electrons_passIso", &Electrons_passIso, &b_Electrons_passIso);
    fChain->SetBranchAddress("fixedGridRhoFastjetAll", &fixedGridRhoFastjetAll, &b_fixedGridRhoFastjetAll);
    fChain->SetBranchAddress("GenHT", &GenHT, &b_GenHT);
-   fChain->SetBranchAddress("GenJets", &GenJets, &b_GenJets);
-   fChain->SetBranchAddress("GenJetsAK8", &GenJetsAK8, &b_GenJetsAK8);
+   fChain->SetBranchAddress("GenJets", &GenJets_, &b_GenJets_);
+   fChain->SetBranchAddress("GenJets.fCoordinates.fPt", GenJets_fCoordinates_fPt, &b_GenJets_fCoordinates_fPt);
+   fChain->SetBranchAddress("GenJets.fCoordinates.fEta", GenJets_fCoordinates_fEta, &b_GenJets_fCoordinates_fEta);
+   fChain->SetBranchAddress("GenJets.fCoordinates.fPhi", GenJets_fCoordinates_fPhi, &b_GenJets_fCoordinates_fPhi);
+   fChain->SetBranchAddress("GenJets.fCoordinates.fE", GenJets_fCoordinates_fE, &b_GenJets_fCoordinates_fE);
+   fChain->SetBranchAddress("GenJetsAK8", &GenJetsAK8_, &b_GenJetsAK8_);
+   fChain->SetBranchAddress("GenJetsAK8.fCoordinates.fPt", GenJetsAK8_fCoordinates_fPt, &b_GenJetsAK8_fCoordinates_fPt);
+   fChain->SetBranchAddress("GenJetsAK8.fCoordinates.fEta", GenJetsAK8_fCoordinates_fEta, &b_GenJetsAK8_fCoordinates_fEta);
+   fChain->SetBranchAddress("GenJetsAK8.fCoordinates.fPhi", GenJetsAK8_fCoordinates_fPhi, &b_GenJetsAK8_fCoordinates_fPhi);
+   fChain->SetBranchAddress("GenJetsAK8.fCoordinates.fE", GenJetsAK8_fCoordinates_fE, &b_GenJetsAK8_fCoordinates_fE);
    fChain->SetBranchAddress("GenJetsAK8_multiplicity", &GenJetsAK8_multiplicity, &b_GenJetsAK8_multiplicity);
    fChain->SetBranchAddress("GenJetsAK8_softDropMass", &GenJetsAK8_softDropMass, &b_GenJetsAK8_softDropMass);
    fChain->SetBranchAddress("GenMET", &GenMET, &b_GenMET);
    fChain->SetBranchAddress("GenMETPhi", &GenMETPhi, &b_GenMETPhi);
    fChain->SetBranchAddress("GenMHT", &GenMHT, &b_GenMHT);
    fChain->SetBranchAddress("GenMHTPhi", &GenMHTPhi, &b_GenMHTPhi);
-   fChain->SetBranchAddress("GenParticles", &GenParticles, &b_GenParticles);
+   fChain->SetBranchAddress("GenParticles", &GenParticles_, &b_GenParticles_);
+   fChain->SetBranchAddress("GenParticles.fCoordinates.fPt", GenParticles_fCoordinates_fPt, &b_GenParticles_fCoordinates_fPt);
+   fChain->SetBranchAddress("GenParticles.fCoordinates.fEta", GenParticles_fCoordinates_fEta, &b_GenParticles_fCoordinates_fEta);
+   fChain->SetBranchAddress("GenParticles.fCoordinates.fPhi", GenParticles_fCoordinates_fPhi, &b_GenParticles_fCoordinates_fPhi);
+   fChain->SetBranchAddress("GenParticles.fCoordinates.fE", GenParticles_fCoordinates_fE, &b_GenParticles_fCoordinates_fE);
+   fChain->SetBranchAddress("GenParticles_Charge", &GenParticles_Charge, &b_GenParticles_Charge);
    fChain->SetBranchAddress("GenParticles_ParentId", &GenParticles_ParentId, &b_GenParticles_ParentId);
    fChain->SetBranchAddress("GenParticles_ParentIdx", &GenParticles_ParentIdx, &b_GenParticles_ParentIdx);
    fChain->SetBranchAddress("GenParticles_PdgId", &GenParticles_PdgId, &b_GenParticles_PdgId);
    fChain->SetBranchAddress("GenParticles_Status", &GenParticles_Status, &b_GenParticles_Status);
+   fChain->SetBranchAddress("GenParticles_TTFlag", &GenParticles_TTFlag, &b_GenParticles_TTFlag);
+   fChain->SetBranchAddress("GenParticles_vertexIdx", &GenParticles_vertexIdx, &b_GenParticles_vertexIdx);
+   fChain->SetBranchAddress("GenVertices", &GenVertices_, &b_GenVertices_);
+   fChain->SetBranchAddress("GenVertices.fCoordinates.fX", GenVertices_fCoordinates_fX, &b_GenVertices_fCoordinates_fX);
+   fChain->SetBranchAddress("GenVertices.fCoordinates.fY", GenVertices_fCoordinates_fY, &b_GenVertices_fCoordinates_fY);
+   fChain->SetBranchAddress("GenVertices.fCoordinates.fZ", GenVertices_fCoordinates_fZ, &b_GenVertices_fCoordinates_fZ);
    fChain->SetBranchAddress("globalSuperTightHalo2016Filter", &globalSuperTightHalo2016Filter, &b_globalSuperTightHalo2016Filter);
    fChain->SetBranchAddress("globalTightHalo2016Filter", &globalTightHalo2016Filter, &b_globalTightHalo2016Filter);
    fChain->SetBranchAddress("HBHEIsoNoiseFilter", &HBHEIsoNoiseFilter, &b_HBHEIsoNoiseFilter);
@@ -723,7 +875,11 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("isoPionTracks", &isoPionTracks, &b_isoPionTracks);
    fChain->SetBranchAddress("JetID", &JetID, &b_JetID);
    fChain->SetBranchAddress("JetIDAK8", &JetIDAK8, &b_JetIDAK8);
-   fChain->SetBranchAddress("Jets", &Jets, &b_Jets);
+   fChain->SetBranchAddress("Jets", &Jets_, &b_Jets_);
+   fChain->SetBranchAddress("Jets.fCoordinates.fPt", Jets_fCoordinates_fPt, &b_Jets_fCoordinates_fPt);
+   fChain->SetBranchAddress("Jets.fCoordinates.fEta", Jets_fCoordinates_fEta, &b_Jets_fCoordinates_fEta);
+   fChain->SetBranchAddress("Jets.fCoordinates.fPhi", Jets_fCoordinates_fPhi, &b_Jets_fCoordinates_fPhi);
+   fChain->SetBranchAddress("Jets.fCoordinates.fE", Jets_fCoordinates_fE, &b_Jets_fCoordinates_fE);
    fChain->SetBranchAddress("Jets_axismajor", &Jets_axismajor, &b_Jets_axismajor);
    fChain->SetBranchAddress("Jets_axisminor", &Jets_axisminor, &b_Jets_axisminor);
    fChain->SetBranchAddress("Jets_bDiscriminatorCSV", &Jets_bDiscriminatorCSV, &b_Jets_bDiscriminatorCSV);
@@ -755,7 +911,11 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("Jets_photonMultiplicity", &Jets_photonMultiplicity, &b_Jets_photonMultiplicity);
    fChain->SetBranchAddress("Jets_ptD", &Jets_ptD, &b_Jets_ptD);
    fChain->SetBranchAddress("Jets_qgLikelihood", &Jets_qgLikelihood, &b_Jets_qgLikelihood);
-   fChain->SetBranchAddress("JetsAK8", &JetsAK8, &b_JetsAK8);
+   fChain->SetBranchAddress("JetsAK8", &JetsAK8_, &b_JetsAK8_);
+   fChain->SetBranchAddress("JetsAK8.fCoordinates.fPt", JetsAK8_fCoordinates_fPt, &b_JetsAK8_fCoordinates_fPt);
+   fChain->SetBranchAddress("JetsAK8.fCoordinates.fEta", JetsAK8_fCoordinates_fEta, &b_JetsAK8_fCoordinates_fEta);
+   fChain->SetBranchAddress("JetsAK8.fCoordinates.fPhi", JetsAK8_fCoordinates_fPhi, &b_JetsAK8_fCoordinates_fPhi);
+   fChain->SetBranchAddress("JetsAK8.fCoordinates.fE", JetsAK8_fCoordinates_fE, &b_JetsAK8_fCoordinates_fE);
    fChain->SetBranchAddress("JetsAK8_chargedEmEnergyFraction", &JetsAK8_chargedEmEnergyFraction, &b_JetsAK8_chargedEmEnergyFraction);
    fChain->SetBranchAddress("JetsAK8_chargedHadronEnergyFraction", &JetsAK8_chargedHadronEnergyFraction, &b_JetsAK8_chargedHadronEnergyFraction);
    fChain->SetBranchAddress("JetsAK8_chargedHadronMultiplicity", &JetsAK8_chargedHadronMultiplicity, &b_JetsAK8_chargedHadronMultiplicity);
@@ -799,7 +959,12 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("JetsAK8_photonEnergyFraction", &JetsAK8_photonEnergyFraction, &b_JetsAK8_photonEnergyFraction);
    fChain->SetBranchAddress("JetsAK8_photonMultiplicity", &JetsAK8_photonMultiplicity, &b_JetsAK8_photonMultiplicity);
    fChain->SetBranchAddress("JetsAK8_softDropMass", &JetsAK8_softDropMass, &b_JetsAK8_softDropMass);
-   fChain->SetBranchAddress("JetsAK8_subjets", &JetsAK8_subjets, &b_JetsAK8_subjets);
+   fChain->SetBranchAddress("JetsAK8_subjets", &JetsAK8_subjets_, &b_JetsAK8_subjets_);
+   fChain->SetBranchAddress("JetsAK8_subjets.fCoordinates.fPt", JetsAK8_subjets_fCoordinates_fPt, &b_JetsAK8_subjets_fCoordinates_fPt);
+   fChain->SetBranchAddress("JetsAK8_subjets.fCoordinates.fEta", JetsAK8_subjets_fCoordinates_fEta, &b_JetsAK8_subjets_fCoordinates_fEta);
+   fChain->SetBranchAddress("JetsAK8_subjets.fCoordinates.fPhi", JetsAK8_subjets_fCoordinates_fPhi, &b_JetsAK8_subjets_fCoordinates_fPhi);
+   fChain->SetBranchAddress("JetsAK8_subjets.fCoordinates.fE", JetsAK8_subjets_fCoordinates_fE, &b_JetsAK8_subjets_fCoordinates_fE);
+   fChain->SetBranchAddress("JetsAK8_subjetsCounts", &JetsAK8_subjetsCounts, &b_JetsAK8_subjetsCounts);
    fChain->SetBranchAddress("JetsAK8_subjets_axismajor", &JetsAK8_subjets_axismajor, &b_JetsAK8_subjets_axismajor);
    fChain->SetBranchAddress("JetsAK8_subjets_axisminor", &JetsAK8_subjets_axisminor, &b_JetsAK8_subjets_axisminor);
    fChain->SetBranchAddress("JetsAK8_subjets_bDiscriminatorCSV", &JetsAK8_subjets_bDiscriminatorCSV, &b_JetsAK8_subjets_bDiscriminatorCSV);
@@ -816,7 +981,11 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("METUp", &METUp, &b_METUp);
    fChain->SetBranchAddress("MHT", &MHT, &b_MHT);
    fChain->SetBranchAddress("MHTPhi", &MHTPhi, &b_MHTPhi);
-   fChain->SetBranchAddress("Muons", &Muons, &b_Muons);
+   fChain->SetBranchAddress("Muons", &Muons_, &b_Muons_);
+   fChain->SetBranchAddress("Muons.fCoordinates.fPt", Muons_fCoordinates_fPt, &b_Muons_fCoordinates_fPt);
+   fChain->SetBranchAddress("Muons.fCoordinates.fEta", Muons_fCoordinates_fEta, &b_Muons_fCoordinates_fEta);
+   fChain->SetBranchAddress("Muons.fCoordinates.fPhi", Muons_fCoordinates_fPhi, &b_Muons_fCoordinates_fPhi);
+   fChain->SetBranchAddress("Muons.fCoordinates.fE", Muons_fCoordinates_fE, &b_Muons_fCoordinates_fE);
    fChain->SetBranchAddress("Muons_charge", &Muons_charge, &b_Muons_charge);
    fChain->SetBranchAddress("Muons_passIso", &Muons_passIso, &b_Muons_passIso);
    fChain->SetBranchAddress("nAllVertices", &nAllVertices, &b_nAllVertices);
@@ -830,13 +999,17 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("PDFweights", &PDFweights, &b_PDFweights);
    fChain->SetBranchAddress("PFCaloMETRatio", &PFCaloMETRatio, &b_PFCaloMETRatio);
    fChain->SetBranchAddress("PrimaryVertexFilter", &PrimaryVertexFilter, &b_PrimaryVertexFilter);
+   fChain->SetBranchAddress("PrimaryVertices", &PrimaryVertices_, &b_PrimaryVertices_);
+   fChain->SetBranchAddress("PrimaryVertices.fCoordinates.fX", PrimaryVertices_fCoordinates_fX, &b_PrimaryVertices_fCoordinates_fX);
+   fChain->SetBranchAddress("PrimaryVertices.fCoordinates.fY", PrimaryVertices_fCoordinates_fY, &b_PrimaryVertices_fCoordinates_fY);
+   fChain->SetBranchAddress("PrimaryVertices.fCoordinates.fZ", PrimaryVertices_fCoordinates_fZ, &b_PrimaryVertices_fCoordinates_fZ);
    fChain->SetBranchAddress("PrimaryVertices_chi2", &PrimaryVertices_chi2, &b_PrimaryVertices_chi2);
    fChain->SetBranchAddress("PrimaryVertices_isFake", &PrimaryVertices_isFake, &b_PrimaryVertices_isFake);
    fChain->SetBranchAddress("PrimaryVertices_isGood", &PrimaryVertices_isGood, &b_PrimaryVertices_isGood);
    fChain->SetBranchAddress("PrimaryVertices_isValid", &PrimaryVertices_isValid, &b_PrimaryVertices_isValid);
    fChain->SetBranchAddress("PrimaryVertices_ndof", &PrimaryVertices_ndof, &b_PrimaryVertices_ndof);
    fChain->SetBranchAddress("PrimaryVertices_nTracks", &PrimaryVertices_nTracks, &b_PrimaryVertices_nTracks);
-   fChain->SetBranchAddress("PrimaryVertices_position", &PrimaryVertices_position, &b_PrimaryVertices_position);
+   fChain->SetBranchAddress("PrimaryVertices_sumTrackPt2", &PrimaryVertices_sumTrackPt2, &b_PrimaryVertices_sumTrackPt2);
    fChain->SetBranchAddress("PrimaryVertices_tError", &PrimaryVertices_tError, &b_PrimaryVertices_tError);
    fChain->SetBranchAddress("PrimaryVertices_time", &PrimaryVertices_time, &b_PrimaryVertices_time);
    fChain->SetBranchAddress("PrimaryVertices_xError", &PrimaryVertices_xError, &b_PrimaryVertices_xError);
@@ -848,9 +1021,10 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("puWeight", &puWeight, &b_puWeight);
    fChain->SetBranchAddress("ScaleWeights", &ScaleWeights, &b_ScaleWeights);
    fChain->SetBranchAddress("SignalParameters", &SignalParameters, &b_SignalParameters);
-   fChain->SetBranchAddress("SusyLSPMass", &SusyLSPMass, &b_SusyLSPMass);
-   fChain->SetBranchAddress("SusyMotherMass", &SusyMotherMass, &b_SusyMotherMass);
-   fChain->SetBranchAddress("Tracks", &Tracks, &b_Tracks);
+   fChain->SetBranchAddress("Tracks", &Tracks_, &b_Tracks_);
+   fChain->SetBranchAddress("Tracks.fCoordinates.fX", Tracks_fCoordinates_fX, &b_Tracks_fCoordinates_fX);
+   fChain->SetBranchAddress("Tracks.fCoordinates.fY", Tracks_fCoordinates_fY, &b_Tracks_fCoordinates_fY);
+   fChain->SetBranchAddress("Tracks.fCoordinates.fZ", Tracks_fCoordinates_fZ, &b_Tracks_fCoordinates_fZ);
    fChain->SetBranchAddress("Tracks_charge", &Tracks_charge, &b_Tracks_charge);
    fChain->SetBranchAddress("Tracks_dxyErrorPV0", &Tracks_dxyErrorPV0, &b_Tracks_dxyErrorPV0);
    fChain->SetBranchAddress("Tracks_dxyPV0", &Tracks_dxyPV0, &b_Tracks_dxyPV0);
@@ -862,6 +1036,7 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("Tracks_foundHits", &Tracks_foundHits, &b_Tracks_foundHits);
    fChain->SetBranchAddress("Tracks_fromPV0", &Tracks_fromPV0, &b_Tracks_fromPV0);
    fChain->SetBranchAddress("Tracks_hitPattern", &Tracks_hitPattern, &b_Tracks_hitPattern);
+   fChain->SetBranchAddress("Tracks_hitPatternCounts", &Tracks_hitPatternCounts, &b_Tracks_hitPatternCounts);
    fChain->SetBranchAddress("Tracks_IP2DPV0", &Tracks_IP2DPV0, &b_Tracks_IP2DPV0);
    fChain->SetBranchAddress("Tracks_IP2dSigPV0", &Tracks_IP2dSigPV0, &b_Tracks_IP2dSigPV0);
    fChain->SetBranchAddress("Tracks_IP3DPV0", &Tracks_IP3DPV0, &b_Tracks_IP3DPV0);
@@ -876,7 +1051,11 @@ void doHistos::Init(TTree *tree)
    fChain->SetBranchAddress("Tracks_pvAssociationQuality", &Tracks_pvAssociationQuality, &b_Tracks_pvAssociationQuality);
    fChain->SetBranchAddress("Tracks_qoverpError", &Tracks_qoverpError, &b_Tracks_qoverpError);
    fChain->SetBranchAddress("Tracks_quality", &Tracks_quality, &b_Tracks_quality);
-   fChain->SetBranchAddress("Tracks_referencePoint", &Tracks_referencePoint, &b_Tracks_referencePoint);
+   fChain->SetBranchAddress("Tracks_referencePoint", &Tracks_referencePoint_, &b_Tracks_referencePoint_);
+   fChain->SetBranchAddress("Tracks_referencePoint.fCoordinates.fX", Tracks_referencePoint_fCoordinates_fX, &b_Tracks_referencePoint_fCoordinates_fX);
+   fChain->SetBranchAddress("Tracks_referencePoint.fCoordinates.fY", Tracks_referencePoint_fCoordinates_fY, &b_Tracks_referencePoint_fCoordinates_fY);
+   fChain->SetBranchAddress("Tracks_referencePoint.fCoordinates.fZ", Tracks_referencePoint_fCoordinates_fZ, &b_Tracks_referencePoint_fCoordinates_fZ);
+   fChain->SetBranchAddress("Tracks_vertexIdx", &Tracks_vertexIdx, &b_Tracks_vertexIdx);
    fChain->SetBranchAddress("TriggerPass", &TriggerPass, &b_TriggerPass);
    fChain->SetBranchAddress("TriggerPrescales", &TriggerPrescales, &b_TriggerPrescales);
    fChain->SetBranchAddress("TriggerVersion", &TriggerVersion, &b_TriggerVersion);
