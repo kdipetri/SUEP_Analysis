@@ -74,6 +74,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       "Jets_chargedMultiplicity",
       "JetsAK8",
       "JetsAK8_ID",
+      "NVtx",
       "Tracks",
       "Tracks_fromPV0",
       "Tracks_matchedToPFCandidate",
@@ -145,30 +146,29 @@ void doHistos::Loop(std::string s_sample,bool isMC)
         }
       }
       //std::cout << "NTRUTH = " << ntruth << std::endl;
-        plotter.Plot1D(Form("%s_truthstudy_scalar_mass"   , s_sample.c_str()), ";mass [GeV]" , scalar.M()      , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_scalar_ntracks", s_sample.c_str()), ";n_tracks"   , -1              , 100, 0, 1000);
-        plotter.Plot1D(Form("%s_truthstudy_scalar_pt"     , s_sample.c_str()), ";p_{T} [GeV]", scalar.Pt()     , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_scalar_mass"   , s_sample.c_str()), ";mass [GeV]" , scalar.M()      , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_scalar_ntracks", s_sample.c_str()), ";n_tracks"   , -1              , 100, 0, 1000);
+      plotter.Plot1D(Form("%s_truthstudy_scalar_pt"     , s_sample.c_str()), ";p_{T} [GeV]", scalar.Pt()     , 100, 0, 2000);
 
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_all.p4.M()      , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_all.nTruthTracks, 100, 0, 1000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_all.p4.Pt()     , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_eta2p5.p4.M()      , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_eta2p5.nTruthTracks, 100, 0, 1000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_eta2p5.p4.Pt()     , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_mass"          , s_sample.c_str()), ";mass [GeV]" , suep_jet.p4.M()      , 100, 0, 2000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_ntracks"       , s_sample.c_str()), ";n_tracks"   , suep_jet.nTruthTracks, 100, 0, 1000);
-        plotter.Plot1D(Form("%s_truthstudy_suep_jet_pt"            , s_sample.c_str()), ";p_{T} [GeV]", suep_jet.p4.Pt()     , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_all.p4.M()      , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_all.nTruthTracks, 100, 0, 1000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_charge_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_all.p4.Pt()     , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_mass"   , s_sample.c_str()), ";mass [GeV]" , suep_jet_eta2p5.p4.M()      , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks", s_sample.c_str()), ";n_tracks"   , suep_jet_eta2p5.nTruthTracks, 100, 0, 1000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_eta2p5_pt"     , s_sample.c_str()), ";p_{T} [GeV]", suep_jet_eta2p5.p4.Pt()     , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_mass"          , s_sample.c_str()), ";mass [GeV]" , suep_jet.p4.M()      , 100, 0, 2000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_ntracks"       , s_sample.c_str()), ";n_tracks"   , suep_jet.nTruthTracks, 100, 0, 1000);
+      plotter.Plot1D(Form("%s_truthstudy_suep_jet_pt"            , s_sample.c_str()), ";p_{T} [GeV]", suep_jet.p4.Pt()     , 100, 0, 2000);
   
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks_scalar_eta"   , s_sample.c_str()), "" , scalar.Eta(), suep_jet_eta2p5.nTruthTracks  , 50, -5, 5, 50, 0, 1000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_ntracks_scalar_eta"   , s_sample.c_str()), "" , scalar.Eta(), suep_jet_eta2p5.nTruthTracks  , 50, -5, 5, 50, 0, 1000);
 
-
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_all.p4.M()     , 50, 0, 2000, 50, 0, 2000);
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_eta2p5.p4.M()  , 50, 0, 2000, 50, 0, 2000);
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_mass"          , s_sample.c_str()), "" , scalar.M(), suep_jet.p4.M()         , 100, 0, 2000, 100, 0, 1000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_all.p4.M()     , 50, 0, 2000, 50, 0, 2000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_mass"   , s_sample.c_str()), "" , scalar.M(), suep_jet_eta2p5.p4.M()  , 50, 0, 2000, 50, 0, 2000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_mass"          , s_sample.c_str()), "" , scalar.M(), suep_jet.p4.M()         , 100, 0, 2000, 100, 0, 1000);
   
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_all.p4.Pt()     , 50, 0, 2000, 50, 0, 2000);
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_eta2p5.p4.Pt()  , 50, 0, 2000, 50, 0, 2000);
-        plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_pt"          , s_sample.c_str()), "" , scalar.Pt(), suep_jet.p4.Pt()         , 50, 0, 2000, 50, 0, 2000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_charge_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_all.p4.Pt()     , 50, 0, 2000, 50, 0, 2000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_eta2p5_scalar_pt"   , s_sample.c_str()), "" , scalar.Pt(), suep_jet_eta2p5.p4.Pt()  , 50, 0, 2000, 50, 0, 2000);
+      plotter.Plot2D(Form("%s_truthstudy_suep_jet_scalar_pt"          , s_sample.c_str()), "" , scalar.Pt(), suep_jet.p4.Pt()         , 50, 0, 2000, 50, 0, 2000);
 
       plotter.Plot1D(Form("%s_ntruth_final_state" ,s_sample.c_str()),";ntruth", ntruth, 100,0,500);
 
@@ -219,6 +219,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       njets=0;
       lead_jet_pt=0;
       float max_dphi = 0;
+      nvtx=NVtx;
       //Jet lead_jet; 
       //Jet true_isr_jet; // doesn't really work
       TLorentzVector jet_p4;
@@ -307,7 +308,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       basic_kinematics(s_sample,"all"); // no trigger requirement
 
       // For a little speedup
-      if (ht < 500) continue;
+      //if (ht < 500) continue;
 
       // old
       // Trying different jet cone sizes and algorithms here...
@@ -319,9 +320,9 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       // Pass scouting or offline triggers
       // * 
 
-      //if (ht > 500){// Scouting stream 
+      if (ht > 500){// Scouting stream 
       //
-      //  //basic_kinematics(s_sample,"scouting");
+         basic_kinematics(s_sample,"scouting");
       //
       //  //plotEventShapes(s_sample, "scouting", tracks);
       //
@@ -330,7 +331,7 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
       //
       //
-      //}
+      }
       if (ht > 1200 || lead_jet_pt > 500) {
 
 
@@ -340,13 +341,13 @@ void doHistos::Loop(std::string s_sample,bool isMC)
 
         //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
         ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
-        fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
+        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
         ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
         //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
 
-        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2000); // param = rho
-        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1000); // param = rho
-        VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 500); // param = rho
+        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2000); // param = rho
+        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1000); // param = rho
+        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 500); // param = rho
 
       }
       

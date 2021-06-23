@@ -22,6 +22,11 @@ void jet_plots(std::string sample, std::string sel){
 void combined_plots(std::string sample, std::string sel){
 	plotter.Plot2D(Form("%s_%s_nchpfs_v_ht"   , sample.c_str(),sel.c_str()), ";H_{T} [GeV];n_{tracks}", ht   , npfs, 30,0,3000   , 100,0,1000);
 	plotter.Plot2D(Form("%s_%s_nchpfs_v_njets", sample.c_str(),sel.c_str()), ";n_{jets};n_{tracks}"   , njets, npfs, 20,-0.5,19.5, 100,0,1000);
+  plotter.Plot2D(Form("%s_%s_ntracks_v_npvs", sample.c_str(),sel.c_str()), ";n_{PV};n_{tracks}"   , nvtx, npfs, 60,0,60, 50, 0 ,500 );
+    
+    if (nvtx < 20) plotter.Plot1D(Form("%s_%s_lownPV_ntracks"    ,sample.c_str(),sel.c_str()),";n_{tracks}", npfs   , 100,0,1000); 
+    else if ( nvtx < 30) plotter.Plot1D(Form("%s_%s_midnPV_ntracks"    ,sample.c_str(),sel.c_str()),";n_{tracks}", npfs   , 100,0,1000);
+    else plotter.Plot1D(Form("%s_%s_highnPV_ntracks"    ,sample.c_str(),sel.c_str()),";n_{tracks}", npfs   , 100,0,1000);
 }
 void basic_kinematics(std::string sample, std::string sel){
 	jet_plots(sample,sel);

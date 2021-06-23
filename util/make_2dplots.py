@@ -46,7 +46,7 @@ def getQCD(dist):
     
     hists = []
     for sample in samples: 
-        f = ROOT.TFile.Open("output/{}.root".format(sample))
+        f = ROOT.TFile.Open("output/safe_qcd/{}.root".format(sample))
         h = f.Get("{}_{}".format(sample,dist))
         if not h: continue
         h.Scale(qcd_xs(sample))
@@ -65,15 +65,16 @@ def getQCD(dist):
 
 def plot2D(dist):
 
-	c = ROOT.TCanvas(dist,"",900,800)
-	c.SetRightMargin(0.25)
-	c.SetLeftMargin(0.15)
-
-	hist = getQCD(dist)
-	hist.Draw("COLZ")
-
-	c.Print("plots/2Dplots/{}.png".format(dist))
-	return
+    c = ROOT.TCanvas(dist,"",900,800)
+    c.SetRightMargin(0.25)
+    c.SetLeftMargin(0.15)
+    c.SetLogz(1)
+    
+    hist = getQCD(dist)
+    hist.Draw("COLZ")
+    
+    c.Print("plots/2Dplots/{}.png".format(dist))
+    return
 
 
 dists=[]
@@ -87,6 +88,7 @@ dists.append("scouting_evtshape_nchpfs_v_circularity")
 dists.append("scouting_evtshape_njets_v_circularity")	
 dists.append("scouting_nchpfs_v_ht")	
 dists.append("scouting_nchpfs_v_njets")
+dists.append("ntracks_v_npvs")
 
 
 

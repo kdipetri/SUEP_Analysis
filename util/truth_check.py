@@ -15,9 +15,14 @@ def adjust(hist):
 	if "truthstudy_suep_jet_scalar_mass" in name:
 		hist.GetXaxis().SetTitle("scalar mass [GeV]")
 		hist.GetYaxis().SetTitle("truth particles mass [GeV]")	
+
 	if "truthstudy_suep_jet_scalar_pt" in name:
 		hist.GetXaxis().SetTitle("scalar p_{T} [GeV]")
 		hist.GetYaxis().SetTitle("truth particles p_{T} [GeV]")	
+	if "truthstudy_suep_jet_mass" in name:
+		hist.GetXaxis().SetTitle("truth jet mass [GeV]")
+		hist.GetXaxis().SetRangeUser(0,1000)
+
 	return 
 
 def clean1D(hist):
@@ -137,6 +142,34 @@ def compareAcceptance(dist):
 	compare1D(hists,labels,"truth_mass_study/mMed-{}_decay_{}_{}".format(mMed,decay,dist))
 	#if histname=="h_pf_ntracks": 
 
+def compareMass(dist):
+	temp=2
+	decay="darkPhoHad"
+	mDark=2
+	mMeds=[]
+	mMeds.append(125)
+	mMeds.append(400)
+	mMeds.append(750)
+	mMeds.append(1000)
+	sel = "truthstudy_suep_jet"
+
+	labels = []
+	labels.append("m_{S}=125 GeV")
+	labels.append("m_{S}=400 GeV")
+	labels.append("m_{S}=750 GeV")
+	labels.append("m_{S}=1000 GeV")	
+	hists = []
+	
+	for mMed in mMeds:
+	    histname = "mMed-{}_mDark-{}_temp-{}_decay-{}_{}_{}".format(mMed,mDark,temp,decay,sel,dist)
+	    #print(histname)
+	    hist = get1D(mMed,mDark,temp,decay,histname)
+	    if hist : 
+	        hists.append(hist)
+	
+	compare1D(hists,labels,"truth_mass_study/compare_{}_decay_{}_{}".format(sel,decay,dist))
+	#if histname=="h_pf_ntracks": 
+
 
 dists=[]
 dists.append("mass")
@@ -144,6 +177,7 @@ dists.append("pt")
 dists.append("ntracks")
 for dist in dists:
 	compareAcceptance(dist)
+	compareMass(dist)
 
 dists2D=[]
 dists2D.append("truthstudy_suep_jet_eta2p5_ntracks_scalar_eta")

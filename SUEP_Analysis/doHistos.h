@@ -41,6 +41,7 @@ int npfs_08=0;
 int npfs_07=0;
 int npfs_2=0;
 int njets=0;
+int nvtx=0;
 float ht=0;
 float lead_jet_pt=0;
 

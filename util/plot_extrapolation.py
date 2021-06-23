@@ -84,13 +84,13 @@ def shape_eff(mass,sr="scout",opt="had"):
     if sr=="ht": # jet mass        
         if opt=="had":
             if mass==125 : return 0.03 
-            if mass==400 : return 0.25
+            if mass==400 : return 0.60
             if mass==750 : return 0.95
             if mass==1000: return 1.0 
             if mass>=2000: return 1.0
         if opt=="gen":
             if mass==125 : return 0.005
-            if mass==400 : return 0.05
+            if mass==400 : return 0.15
             if mass==750 : return 0.2
             if mass==1000: return 0.4
             if mass>=2000: return 0.5
@@ -101,7 +101,7 @@ def total_eff(mass,sr,opt):
     eff = trigger_eff(mass,sr,opt)*ntrack_eff(mass,sr,opt)*shape_eff(mass,sr,opt)
     return eff
 
-def excluded_xs(eff,qcd_bkg,sigma=3):
+def excluded_xs(eff,qcd_bkg,sigma=2):
     # compute nsig you need after eff
     n_sig_final = sigma * (qcd_bkg+qcd_bkg**2)**0.5
     # compute nsib before selection
@@ -119,8 +119,8 @@ def label(sr,opt):
     lab=""
     if sr=="scout":lab+="Scouting, " 
     if sr=="ht"   :lab+="Offline, " 
-    if opt=="had" :lab+="#gamma_{D}#rightarrowee,#mu#mu,#pi#pi" 
-    if opt=="gen" :lab+="#gamma_{D}#rightarrowuu" 
+    if opt=="had" :lab+="A'#rightarrowee,#mu#mu,#pi#pi" 
+    if opt=="gen" :lab+="A'#rightarrowuu" 
     return lab
 
 def clean(graph):
