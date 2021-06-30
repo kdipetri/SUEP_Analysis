@@ -3,6 +3,60 @@
 
 using namespace fastjet;
 
+double delta_r(PseudoJet jet1, PseudoJet jet2)
+{
+    double dphi = abs(jet1.phi() - jet2.phi());
+    if (dphi > pi) {dphi = twopi - dphi;}
+    double deta = jet1.eta() - jet2.eta();
+    return (dphi*dphi + deta*deta);
+}
+/// the return value is 1 for spherical events and 0 for events linear in r-phi. This function
+/// needs the delta R , radius and pT of the jet 
+/// defines a ring with thickness deltaR
+/// inner radius ra = r-deltaR/2
+/// outer radius rb = r+deltaR/2
+/// around the jet axist, and pT is the transverse momentum of the whole jet
+/// The distance of a given particle i from the jet axis can be expressed in terms of the azimuthal angle ϕi and the pseudorapidity ηi as
+/// In the current analysis we used a binning of δr=0.05 and restricted ourselves to the fiducial region r < 0.6 to avoid edge effects
+// from https://arxiv.org/pdf/2008.08500.pdf
+/// should be
+double rho(PseudoJet jet, int R=1.0 , const float& dR=0.1) 
+{
+    // get constituents
+    std::vector<PseudoJet> constituents = jet.constituents();
+    if (constituents.size() == 0 ) return -1;
+    
+    // scalar sum of contituent pT if inside our ring
+    float pTsum = 0;
+    for (PseudoJet constituent : constituents ) 
+    {
+      if ( delta_r(jet,constituent) > ( R + dR/2.0 ) ) continue; 
+      if ( delta_r(jet,constituent) < ( R - dR/2.0 ) ) continue; 
+      pTsum += constituent.pt();
+    }
+    
+    float rho = pTsum / jet.pt() / dR;  
+    
+    return rho;
+}
+double width(PseudoJet jet)
+{
+	float num =0;
+	float den =0;
+    // get constituents
+    std::vector<PseudoJet> constituents = jet.constituents();
+    if (constituents.size() == 0 ) return -1;
+  
+    for (PseudoJet constituent: constituents) 
+    {
+  
+  	    num += delta_r(constituent,jet)*constituent.pt();
+  	    den += constituent.pt();
+  
+  
+    }
+    return num/den; 
+}
 
 void makeAKDisplay(const vector<fastjet::PseudoJet> jets, std::string sample, int size, Long64_t ievent){
 
@@ -17,7 +71,6 @@ void makeAKDisplay(const vector<fastjet::PseudoJet> jets, std::string sample, in
 		std::vector<PseudoJet> constituents = jets[i].constituents();
 		for (unsigned j = 0; j < constituents.size(); j++) {
       		graph->SetPoint(j,constituents[j].eta(),constituents[j].phi_std());
-      		//graph->SetPoint(j,constituents[j].eta(),constituents[j].phi_std(),constituents[j].pt());
    		}
    		graph->SetMarkerColor(color.at(i));
    		graph->SetMarkerStyle(21);
@@ -65,7 +118,7 @@ void fatjet_plots(std::string sample, std::string sel, std::vector<Track> tracks
 	PseudoJet suep_jet;
 	int max_nconsit=0;
 
-	if (ievent < 200) makeAKDisplay(jets, sample, cone, ievent);
+	///if (ievent < 200) makeAKDisplay(jets, sample, cone, ievent);
 
 	for (unsigned i = 0; i < jets.size(); i++) {
 
@@ -94,21 +147,13 @@ void fatjet_plots(std::string sample, std::string sel, std::vector<Track> tracks
 
 		// Constituent based plots
 		vector<PseudoJet> constituents = jets[i].constituents();
-		float num =0;
-		float den =0;
 		for (unsigned j = 0; j < constituents.size(); j++) {
-			TLorentzVector trk_p4;
-			trk_p4.SetPtEtaPhiM(constituents[j].pt(),constituents[j].eta(),constituents[j].phi_std(),constituents[j].m());
-
-			num += trk_p4.DeltaR(jet_p4)*trk_p4.Pt();
-			den += trk_p4.Pt();
-
 			plotter.Plot1D(Form( "%s_%s_jetsAK%i_constit_pt", sample.c_str(),sel.c_str(),cone),";constit pt", constituents[j].pt(), 100, 0, 100 );
 
 		}
-		float width = num/den;
 		plotter.Plot1D(Form( "%s_%s_jetsAK%i_nconstit", sample.c_str(),sel.c_str(),cone),";n constit.", constituents.size(), 100, 0, 500 );
-		plotter.Plot1D(Form( "%s_%s_jetsAK%i_width"   , sample.c_str(),sel.c_str(),cone),";jet width" , width, 100, 0, 3.0 );
+		plotter.Plot1D(Form( "%s_%s_jetsAK%i_width"   , sample.c_str(),sel.c_str(),cone),";jet width" , width(jets[i]), 100, 0, 3.0 );
+		plotter.Plot1D(Form( "%s_%s_jetsAK%i_rho"     , sample.c_str(),sel.c_str(),cone),";jet rho" , rho(jets[i]), 100, 0, 1.0 );
 		
 		if (constituents.size() > max_nconsit) {
 			max_nconsit = constituents.size();
@@ -137,45 +182,32 @@ void fatjet_plots(std::string sample, std::string sel, std::vector<Track> tracks
 			float dR_tmp= suep_p4.DeltaR(scalar);
 			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_dRscalar"  , sample.c_str(),sel.c_str(),cone),";jet,scalar dR"  , dR_tmp		, 50, 0, 6.0 );
 		
-			//plotter.Plot2D(Form("%s_evt%lli_event_display_jetsAK%i",sample_name.c_str(),ievent,cone),";eta;phi;pt", jets[i].eta(), jets[i].phi_std(), 100, 3.5,3.5,100,3.5,3.5 , jets[i].perp());
-		
 			// Constituent based plots
 			vector<PseudoJet> constituents = suep_jet.constituents();
-			float num =0;
-			float den =0;
-			for (unsigned j = 0; j < constituents.size(); j++) {
-				TLorentzVector trk_p4;
-				trk_p4.SetPtEtaPhiM(constituents[j].pt(),constituents[j].eta(),constituents[j].phi_std(),constituents[j].m());
-		
-				num += trk_p4.DeltaR(suep_p4)*trk_p4.Pt();
-				den += trk_p4.Pt();
-		
-				plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_constit_pt", sample.c_str(),sel.c_str(),cone),";constit pt", constituents[j].pt(), 100, 0, 100 );
-		
-			}
-			float width = num/den;
+            for (PseudoJet constituent : constituents)
+            {
+  	            plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_constit_pt", sample.c_str(),sel.c_str(),cone),";constit pt", constituent.pt(), 100, 0, 100 );
+
+            }
 			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_nconstit", sample.c_str(),sel.c_str(),cone),";n constit.", constituents.size(), 100, 0, 500 );
-			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_width"   , sample.c_str(),sel.c_str(),cone),";jet width" , width, 100, 0, 3.0 );		
+			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_width"   , sample.c_str(),sel.c_str(),cone),";jet width" , width(suep_jet), 100, 0, 3.0 );		
+            for (int step=0; step<15; step++){
+			    plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_rho"     , sample.c_str(),sel.c_str(),cone),";jet rho" , rho(suep_jet,step/0.1), 100, 0, 3.0 );		
+            }
 					
 	
 			if (cone == 15){
 			//
 			// COMPARISON WITH TRUTH SUEP "jet"
 			//
-			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_dRtruth", sample.c_str(),sel.c_str(),cone),";dR", truth_suep_jet.p4.DeltaR(suep_p4) , 100, 0, 5.0 );
-			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_mass"    , sample.c_str(),sel.c_str(),cone),";reco/truth m "		, suep_jet.m()		 /truth_suep_jet.p4.M() 		, 100, 0, 2 );
-			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_pt"      , sample.c_str(),sel.c_str(),cone),";reco/truth pt"		, suep_jet.pt()		 /truth_suep_jet.p4.Pt() 		, 100, 0, 2 );
-			plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_nconstit", sample.c_str(),sel.c_str(),cone),";reco/truth nconst"	, (float)constituents.size()/(float)truth_suep_jet.nTruthTracks 	, 100, 0, 2 );
+			//plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_dRtruth", sample.c_str(),sel.c_str(),cone),";dR", truth_suep_jet.p4.DeltaR(suep_p4) , 100, 0, 5.0 );
+			//plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_mass"    , sample.c_str(),sel.c_str(),cone),";reco/truth m "		, suep_jet.m()		 /truth_suep_jet.p4.M() 		, 100, 0, 2 );
+			//plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_pt"      , sample.c_str(),sel.c_str(),cone),";reco/truth pt"		, suep_jet.pt()		 /truth_suep_jet.p4.Pt() 		, 100, 0, 2 );
+			//plotter.Plot1D(Form( "%s_%s_jetsAK%i_suep_truth_ratio_nconstit", sample.c_str(),sel.c_str(),cone),";reco/truth nconst"	, (float)constituents.size()/(float)truth_suep_jet.nTruthTracks 	, 100, 0, 2 );
 	
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_dRtruth_rationtrack" , sample.c_str(),sel.c_str(),cone),";dR; reco/truth nconst", truth_suep_jet.p4.DeltaR(suep_p4) , (float)constituents.size()/(float)truth_suep_jet.nTruthTracks , 100, 0, 5.0, 100, 0, 2 );
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_dRtruth_ntrack" , sample.c_str(),sel.c_str(),cone),";dR; reco/truth nconst", truth_suep_jet.p4.DeltaR(suep_p4) , truth_suep_jet.nTruthTracks , 100, 0, 5.0, 100, 0, 500 );
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_scalar_Tmass"   , sample.c_str(),sel.c_str(),cone),";scalar m; truth m"  		, scalar.M()					, truth_suep_jet.p4.M() 	, 100, 0, 2000, 100, 0, 2000 );
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_scalar_Rmass"   , sample.c_str(),sel.c_str(),cone),";truth m; reco m"  		, scalar.M()					, suep_jet.m()	, 100, 0, 2000, 100, 0, 2000 );
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_scalar_Tpt"   , sample.c_str(),sel.c_str(),cone),";scalar pt; truth pt"  		, scalar.Pt()					, truth_suep_jet.p4.Pt() 	, 100, 0, 2000, 100, 0, 2000 );
-			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_scalar_Rpt"   , sample.c_str(),sel.c_str(),cone),";scalar pt; reco pt"  		, scalar.Pt()					, suep_jet.pt()	, 100, 0, 2000, 100, 0, 2000 );
-			plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_mass"    , sample.c_str(),sel.c_str(),cone),";truth m;reco m "			, truth_suep_jet.p4.M() 		, suep_jet.m()	, 100, 0, 2000, 100, 0, 2000 );
-			plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_pt"      , sample.c_str(),sel.c_str(),cone),";truth pt;reco pt"			, truth_suep_jet.p4.Pt() 		, suep_jet.pt()	, 100, 0, 2000, 100, 0, 2000 );
-			plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_nconstit", sample.c_str(),sel.c_str(),cone),";truth nconst;reco nconst"	, truth_suep_jet.nTruthTracks 	, constituents.size()	, 100, 0,  500, 100, 0,  500 );				
+			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_mass"    , sample.c_str(),sel.c_str(),cone),";truth m;reco m "			, truth_suep_jet.p4.M() 		, suep_jet.m()	, 100, 0, 2000, 100, 0, 2000 );
+			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_pt"      , sample.c_str(),sel.c_str(),cone),";truth pt;reco pt"			, truth_suep_jet.p4.Pt() 		, suep_jet.pt()	, 100, 0, 2000, 100, 0, 2000 );
+			//plotter.Plot2D(Form( "%s_%s_jetsAK%i_suep_truth_nconstit", sample.c_str(),sel.c_str(),cone),";truth nconst;reco nconst"	, truth_suep_jet.nTruthTracks 	, constituents.size()	, 100, 0,  500, 100, 0,  500 );				
 			}
 
 

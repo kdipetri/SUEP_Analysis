@@ -323,94 +323,43 @@ void doHistos::Loop(std::string s_sample,bool isMC)
       if (ht > 500){// Scouting stream 
       //
          basic_kinematics(s_sample,"scouting");
-      //
-      //  //plotEventShapes(s_sample, "scouting", tracks);
-      //
-      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 2.0);
-      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.5);
-      //  //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
-      //
-      //
+      
+         plotEventShapes(s_sample, "scouting", tracks);
+      
+        //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 2.0);
+         fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.5);
+        //fatjet_plots(s_sample, "scouting" ,tracks, suep_jet, ientry, 1.0);
+      
+      
       }
-      if (ht > 1200 || lead_jet_pt > 500) {
+      //if (ht > 1200 || lead_jet_pt > 500) {
 
 
-        basic_kinematics(s_sample,"offline");
+      //  basic_kinematics(s_sample,"offline");
   
-        plotEventShapes(s_sample, "offline", tracks);
+      //  plotEventShapes(s_sample, "offline", tracks);
 
-        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
-        ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
-        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
-        ////fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
-        //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
+      //  //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2.0);
+      //  //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.8);
+      //  //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.5);
+      //  //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.3);
+      //  //fatjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1.0);
 
-        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2000); // param = rho
-        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1000); // param = rho
-        //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 500); // param = rho
+      //  //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 2000); // param = rho
+      //  //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 1000); // param = rho
+      //  //VRjet_plots(s_sample, "offline" ,tracks, suep_jet, ientry, 500); // param = rho
 
-      }
+      //}
       
 
       // * 
       // Event displays with jets that come out of the box
       // * 
-      if (ientry < 100) {//scouting
-        eventdisplays_tracks(s_sample,ientry,tracks);
-        eventdisplays_jets(s_sample,ientry,jets);     
-        //eventdisplays_jetAK8s(s_sample,ientry,jetsAK8);   
-      }
-
-      //
-
-
-      //
-      // Testing ISR jet tagging
-      //
-      //std::string sel = "suep";
-      //for (auto jet : jets){
-      //  if ( jet.index == true_isr_jet.index ) sel = "isr"; 
-      //  else sel="suep";
-      //
-      //  //std::cout << jet.index <<  " (sel,pt,iso,mult) = (" << sel << " , " << jet.p4.Pt() << " , " << jet.isolation << " , " << jet.multiplicity << " ) " << std::endl;
-      //  
-      //  plotter.Plot1D(Form("%s_trig_%sjet_pt"          ,s_sample.c_str(),sel.c_str()),";jet pt"          , jet.p4.Pt()     , 50,0, 1000 );
-      //  plotter.Plot1D(Form("%s_trig_%sjet_scalar_dR"   ,s_sample.c_str(),sel.c_str()),";jet,scalar dR"   , jet.scalar_dR   , 50, 0, 6.0 );
-      //  plotter.Plot1D(Form("%s_trig_%sjet_scalar_dPhi" ,s_sample.c_str(),sel.c_str()),";jet,scalar dPhi" , jet.scalar_dPhi , 50, 0, 6.0 );
-      //  plotter.Plot1D(Form("%s_trig_%sjet_isolation"   ,s_sample.c_str(),sel.c_str()),";jet isolation"   , jet.isolation   , 50, 0, 1.0 );
-      //  plotter.Plot1D(Form("%s_trig_%sjet_multiplicity",s_sample.c_str(),sel.c_str()),";jet multiplicity", jet.multiplicity, 50, 0, 100 );
-      //  plotter.Plot1D(Form("%s_trig_%sjet_min_dR"      ,s_sample.c_str(),sel.c_str()),";jet,jet min dR"  , jet.min_dR      , 50, 0, 6.0 );
-      //
+      //if (ientry < 100) {//scouting
+      //  //eventdisplays_tracks(s_sample,ientry,tracks);
+      //  //eventdisplays_jets(s_sample,ientry,jets);     
+      //  //eventdisplays_jetAK8s(s_sample,ientry,jetsAK8);   
       //}
-
-
-      // Try boosting - fails... bad ISR selection
-      //std::vector<Track> tracks_boosted; tracks_boosted.clear();
-      //if ( isr_jet.p4.Pt() > 100 ) {// if ISR jet, boost tracks
-      //
-      //  for (auto track : tracks){
-      //
-      //    // remove tracks in delta R < 0.4 of ISR jet
-      //    if (track.p4.DeltaR(isr_jet.p4) < 0.4) continue;
-      //
-      //    // boost other jets into seup restfroame
-      //    Track track_boosted = track; // copy other params
-      //    TVector3 threevec = track.p4.Vect() - isr_jet.p4.Vect();
-      //    track_boosted.p4.SetPtEtaPhiM(threevec.Pt(),threevec.Eta(),threevec.Phi(),0.13957);
-      //    tracks_boosted.push_back(track_boosted);
-      //
-      //  }
-      //
-      //}
-      //else tracks_boosted=tracks;
-      //std::cout << tracks.size() << " " << tracks_boosted.size() << std::endl;
-      //plotEventShapes(s_sample, "boosted", tracks_boosted);
-
-
-
-      // Pflow candidates
-      // Scan pT threshold 
-      // Some Pflow cut...
 
 
       // Pile-up distributions - post trigger
